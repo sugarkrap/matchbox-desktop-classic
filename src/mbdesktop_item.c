@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #include "mbdesktop_item.h"
 #include "mbdesktop_module.h"
 #include "md5.h"

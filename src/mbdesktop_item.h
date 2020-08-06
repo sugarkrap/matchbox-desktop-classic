@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _HAVE_MBDESKTOP_ITEM_H
 #define _HAVE_MBDESKTOP_ITEM_H
 

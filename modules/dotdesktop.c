@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #include "mbdesktop_module.h"
 
 #ifdef USE_LIBSN
