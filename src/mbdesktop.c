@@ -23,6 +23,24 @@
 
 #define DIALOG_BORDER 5 	/* 5 Pixel border for dialog */
 
+/* Hardware OK / Cancel buttons.
+ *
+ * Handhelds of this class put two unlabelled-by-any-keysym buttons under
+ * the screen and expect them to mean "confirm" and "go back". On the
+ * Sharp Zaurus (corgi/spitz) the kernel board file reports them as plain
+ * function keys -- CORGI_KEY_OK = KEY_F11 and CORGI_KEY_CANCEL = KEY_F4
+ * -- so by the time they reach X they are indistinguishable from F11/F4
+ * on a PC keyboard, and there is no keysym for them to be mapped to in
+ * the XKB layout either. Bind the function keys directly.
+ *
+ * F4 is safe to take: matchbox-window-manager's stock kbdconfig binds
+ * <alt>f4, not bare f4. Bare f11 *is* bound there (fullscreen), but only
+ * when a kbdconfig is actually installed -- and a grab by the WM would
+ * take the key away from us, not produce a wrong action here.
+ */
+#define MBDESKTOP_KEY_OK      XK_F11
+#define MBDESKTOP_KEY_CANCEL  XK_F4
+
 static void
 modules_init (MBDesktop *mb);
 
@@ -1181,10 +1199,17 @@ mbdesktop_init(int argc, char **argv)
 
   mb->type_register_cnt = ITEM_TYPE_CNT;
 
-  /* get the window ready */
-  XSelectInput(mb->dpy, mb->win_top_level, 
+  /* get the window ready.
+   *
+   * This used to pass the event *type* constants KeyPress|KeyRelease
+   * (2|3) where the event *masks* belong. That happens to come out as 3,
+   * which is exactly KeyPressMask|KeyReleaseMask, so it worked -- but
+   * only by coincidence, and it reads like a bug to anyone touching the
+   * key handling. Spell the masks out.
+   */
+  XSelectInput(mb->dpy, mb->win_top_level,
 	       ExposureMask | ButtonPressMask | ButtonReleaseMask |
-	       KeyPress | KeyRelease | StructureNotifyMask |
+	       KeyPressMask | KeyReleaseMask | StructureNotifyMask |
 	       /* Below for reparented module plugin */
 	       SubstructureRedirectMask | SubstructureNotifyMask |
 	       FocusChangeMask );
@@ -1381,6 +1406,16 @@ handle_button_event(MBDesktop *mb, XButtonEvent *e)
     }
 }
 
+/* Is this an 'activate' key, ie one that launches an app or descends into
+ * a folder ? Kept separate from the switch below because these are the
+ * only keys the first-keypress guard has to swallow.
+ */
+static Bool
+key_is_activate(KeySym key)
+{
+  return (key == XK_Return || key == XK_KP_Enter || key == MBDESKTOP_KEY_OK);
+}
+
 static void
 handle_key_event(MBDesktop *mb, XKeyEvent *e)
 {
@@ -1394,14 +1429,32 @@ handle_key_event(MBDesktop *mb, XKeyEvent *e)
   if (mb->current_head_item == mb->top_head_item)
     return;
 
+  /* Everything below dereferences this. It is set alongside
+   * current_head_item everywhere that moves, so the check above should
+   * cover it, but a stray key event during a reload must not crash the
+   * desktop.
+   */
+  if (mb->kbd_focus_item == NULL)
+    return;
+
+  key = XKeycodeToKeysym (mb->dpy, e->keycode, 0);
+
+  /* The selection outline is only painted once had_kbd_input is set (see
+   * mbdesktop_view_paint()), so before the first key press there is
+   * nothing on screen saying what is selected. Reveal it here -- but only
+   * swallow the key if it would have activated something, or the first
+   * press of OK would launch an item the user never saw. Navigation keys
+   * fall through and move the (now visible) selection straight away.
+   */
   if (mb->had_kbd_input == False)
     {
       mb->had_kbd_input = True;
-      mbdesktop_view_paint(mb, True);      
-      return;
+      mbdesktop_view_paint(mb, True);
+      if (key_is_activate(key))
+	return;
     }
 
-  switch (key = XKeycodeToKeysym (mb->dpy, e->keycode, 0))
+  switch (key)
     {
     case XK_Left:
       if (mbdesktop_current_folder_view (mb) == VIEW_LIST)
@@ -1463,11 +1516,21 @@ handle_key_event(MBDesktop *mb, XKeyEvent *e)
       break;
     case XK_Return:
     case XK_KP_Enter:
-      mb->kbd_focus_item->activate_cb((void *)mb, 
-				      (void *)mb->kbd_focus_item);
+    case MBDESKTOP_KEY_OK:
+      if (mb->kbd_focus_item->activate_cb)
+	mb->kbd_focus_item->activate_cb((void *)mb,
+					(void *)mb->kbd_focus_item);
       return;
     case XK_BackSpace:
-      mbdesktop_item_folder_prev_activate_cb((void *)mb, 
+    case XK_Escape:
+    case MBDESKTOP_KEY_CANCEL:
+      /* The 'Back' item is always the first sibling of a folder's
+       * contents (mbdesktop_module.c creates it as the folder's first
+       * child, and dotdesktop.c only ever inserts after it), and
+       * folder_prev_activate_cb is a no-op on anything that is not one --
+       * so this correctly does nothing at the top level.
+       */
+      mbdesktop_item_folder_prev_activate_cb((void *)mb,
 					     (void *)mbdesktop_item_get_first_sibling(mb->kbd_focus_item));
 	return;
     case XK_Prior:
