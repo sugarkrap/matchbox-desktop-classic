@@ -2,6 +2,12 @@
 
 #include "mbdesktop_module.h"
 
+/* Explicit rather than relying on mbdesktop_module.h's own includes:
+ * errno/strerror are used below to tell "directory is simply not there"
+ * apart from a real failure. */
+#include <errno.h>
+#include <string.h>
+
 #ifdef USE_LIBSN
 #define SN_API_NOT_YET_FROZEN 1
 #include <libsn/sn.h>
@@ -182,7 +188,17 @@ dotdesktop_init (MBDesktop             *mb,
 		 MBDesktopFolderModule *folder_module, 
 		 char                  *arg_str)
 {
-#define APP_PATHS_N 4
+/* Five, not four: the fifth is the SD card. Applications can be
+ * installed onto a card instead of into the NAND root, which on this
+ * hardware is only ~68 MiB (see /usr/sbin/pkgadd, which drives opkg's
+ * second destination). Without this entry a card application installs
+ * correctly, is on $PATH, and simply never appears on the desktop.
+ *
+ * A path that is not there costs one failed opendir() per reload and is
+ * skipped -- which is the normal case, since most of the time there is
+ * no card in the slot. mbdesktop_watch.c is what notices a card arriving
+ * and asks for the reload that makes this directory get scanned. */
+#define APP_PATHS_N 5
 
   DIR *dp;
   struct stat    stat_info;
@@ -285,6 +301,8 @@ dotdesktop_init (MBDesktop             *mb,
       snprintf(app_paths[1], 256, "/usr/share/applications");
       snprintf(app_paths[2], 256, "/usr/local/share/applications");
       snprintf(app_paths[3], 256, "%s/.applications", mb_util_get_homedir());
+      snprintf(app_paths[4], 256,
+	       "/mnt/card/.zaurus/usr/share/applications");
 
     }
 
@@ -308,7 +326,19 @@ dotdesktop_init (MBDesktop             *mb,
 
       if ((dp = opendir(app_paths[i])) == NULL)
 	{
-	  fprintf(stderr, "mb-desktop-dotdesktop: failed to open %s\n", app_paths[i]);
+	  /* "Not there" is the ordinary case for two of these paths -- the
+	   * SD card is usually absent, and $HOME/.applications often does
+	   * not exist -- so it is not worth a line of output. Anything
+	   * else (permissions, I/O error) still gets reported.
+	   *
+	   * This is not just tidiness: the session's stderr goes to
+	   * /tmp/matchbox-session.log, /tmp here is on the jffs2 root and
+	   * not a tmpfs, and the menu is now reloaded every time a card is
+	   * inserted or a package installed. Logging a line per missing
+	   * directory per reload would write to flash for no reason. */
+	  if (errno != ENOENT)
+	    fprintf(stderr, "mb-desktop-dotdesktop: failed to open %s: %s\n",
+		    app_paths[i], strerror(errno));
 	  continue;
 	}
 

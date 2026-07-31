@@ -11,6 +11,7 @@
 #include "mbdesktop_view.h"
 #include "mbdesktop_module.h"
 #include "mbdesktop_win_plugin.h"
+#include "mbdesktop_watch.h"
 
 #include <dlfcn.h>
 
@@ -1602,6 +1603,11 @@ mbdesktop_main(MBDesktop *mb)
   mbdesktop_view_paint(mb, True);
   XFlush(mb->dpy);
 
+  /* Start noticing application installs and SD card insertions by
+   * ourselves. Best-effort: if this fails the desktop behaves exactly as
+   * it did before, reloading only on SIGHUP. */
+  mbdesktop_watch_init();
+
   while (1)
     {
 	  if (WantReload) 	/* Triggered by dnotify signals etc */
@@ -1624,10 +1630,28 @@ mbdesktop_main(MBDesktop *mb)
 	      XSync(mb->dpy, False);
 	    }
 
+	  /* Wait on the X connection AND the watches together, rather than
+	   * blocking in XNextEvent() on X alone. Without this the desktop
+	   * cannot react to anything that is not an X event: a reload
+	   * requested while it sits here -- by a signal, or by a card being
+	   * inserted -- was only acted on when the user next happened to
+	   * generate an event by touching the screen.
+	   *
+	   * Returns immediately when X events are already pending, so the
+	   * handling below is unchanged in the common case. */
+	  if (mbdesktop_watch_wait(mb->dpy))
+	    {
+	      WantReload = True;
+	      continue;		/* reload at the top before reading events */
+	    }
+
+	  if (WantReload)	/* a signal arrived while we were waiting */
+	    continue;
+
 	  XNextEvent(mb->dpy, &ev);
 
 #ifdef USE_DNOTIFY 		/* Block dnotify signal */
-	  sigprocmask(SIG_BLOCK, &block_sigset, NULL); 
+	  sigprocmask(SIG_BLOCK, &block_sigset, NULL);
 #endif
 
 #ifdef USE_XSETTINGS
