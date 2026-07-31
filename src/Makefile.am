@@ -14,7 +14,8 @@ matchbox_desktop_SOURCES = \
  mbdesktop.c mbdesktop_item.c mbdesktop_view.c mbdesktop_module.c md5.c md5.h \
  mbdesktop.h mbdesktop_item.h mbdesktop_view.h mbdesktop_module.h \
  mbdesktop_win_plugin.c mbdesktop_win_plugin.h \
- mbdesktop_bg_cache.c mbdesktop_bg_cache.h
+ mbdesktop_bg_cache.c mbdesktop_bg_cache.h \
+ mbdesktop_watch.c mbdesktop_watch.h
 
 mb_wallpaper_picker_LDADD = $(LIBMB_LIBS)
 
