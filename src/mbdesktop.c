@@ -34,6 +34,12 @@ mbdesktop_get_theme_via_root_prop(MBDesktop *mb);
 static Bool
 mbdesktop_set_highlight_col(MBDesktop *mb, char *spec);
 
+static Bool
+mbdesktop_get_wallpaper_via_root_prop(MBDesktop *mb, char **spec_out);
+
+static char *
+mbdesktop_wallpaper_read_persisted(void);
+
 
 #ifdef USE_XSETTINGS
 static void 
@@ -347,7 +353,76 @@ mbdesktop_get_theme_via_root_prop(MBDesktop *mb)
   return False;
 }
 
-static Bool 
+/* Live wallpaper handoff: the picker app sets this root property so a
+ * currently-running desktop can update without needing to signal the
+ * process (this device's busybox has no kill/killall at all). Mirrors
+ * mbdesktop_get_theme_via_root_prop()'s use of _MB_THEME_NAME. */
+static Bool
+mbdesktop_get_wallpaper_via_root_prop(MBDesktop *mb, char **spec_out)
+{
+  Atom real_type;
+  unsigned long n, extra;
+  int format, status;
+  char *value = NULL;
+
+  status = XGetWindowProperty(mb->dpy, mb->root,
+			      mb->atom_mb_wallpaper,
+			      0L, 1024L, False,
+			      AnyPropertyType, &real_type,
+			      &format, &n, &extra,
+			      (unsigned char **) &value);
+
+  if (status != Success || value == NULL || *value == '\0' || n == 0)
+    {
+      if (value) XFree(value);
+      return False;
+    }
+
+  *spec_out = strdup(value);
+  XFree(value);
+
+  return True;
+}
+
+/* Persisted wallpaper choice, read once at startup so it survives a
+ * reboot (the root property above does not -- it only lives as long
+ * as the X server does). Same $HOME-then-MBCONFDIR fallback pattern
+ * as get_module_list()'s mbdesktop_modules lookup. */
+static char *
+mbdesktop_wallpaper_read_persisted(void)
+{
+  char path[512];
+  FILE *fp;
+  static char spec[1024];
+  size_t len;
+  struct stat st;
+
+  snprintf(path, sizeof(path), "%s/.matchbox/wallpaper",
+	   mb_util_get_homedir());
+
+  if (stat(path, &st))
+    snprintf(path, sizeof(path), MBCONFDIR "/wallpaper");
+
+  fp = fopen(path, "r");
+  if (fp == NULL) return NULL;
+
+  if (fgets(spec, sizeof(spec), fp) == NULL)
+    {
+      fclose(fp);
+      return NULL;
+    }
+  fclose(fp);
+
+  len = strlen(spec);
+  while (len > 0 && (spec[len-1] == '\n' || spec[len-1] == '\r'))
+    spec[--len] = '\0';
+
+  if (len == 0) return NULL;
+
+  return spec;
+}
+
+static Bool
 file_exists(char *filename)
 {
   struct stat st;
@@ -485,7 +560,7 @@ mbdesktop_get_workarea(MBDesktop *mb, int *x, int *y, int *w, int *h)
 void
 mbdesktop_bg_free_config(MBDesktop *mb)
 {
-  if (mb->bg->type == BG_TILED_PXM || mb->bg->type == BG_STRETCHED_PXM)
+  if (BG_IS_IMAGE_TYPE(mb->bg->type))
     free(mb->bg->data.filename);
   free(mb->bg);
   mb->bg = NULL;
@@ -495,8 +570,10 @@ Bool
 mbdesktop_bg_parse_spec(MBDesktop *mb, char *spec)
 {
   /*
-  img-stretched:filename>
-  img-tiled:<filename>
+  img-stretched:<filename>
+  img-tiled:<filename>       (aka img-mosaic:<filename>)
+  img-centered:<filename>
+  img-filled:<filename>      (aka img-fill:<filename>)
   col-solid:<color definition>
   col-gradient-vertical:<start color>,<end color>
   col-gradient-horizontal:<start color>,<end color>
@@ -512,7 +589,10 @@ mbdesktop_bg_parse_spec(MBDesktop *mb, char *spec)
   } conf_mapping[] = {
     { "img-stretched:",           BG_STRETCHED_PXM  },
     { "img-tiled:",               BG_TILED_PXM      },
+    { "img-mosaic:",              BG_TILED_PXM      },
     { "img-centered:",            BG_CENTERED_PXM   },
+    { "img-filled:",              BG_FILLED_PXM     },
+    { "img-fill:",                BG_FILLED_PXM     },
     { "col-solid:",               BG_SOLID          },
     { "col-gradient-vertical:",   BG_GRADIENT_VERT  },
     { "col-gradient-horizontal:", BG_GRADIENT_HORIZ },
@@ -568,6 +648,7 @@ mbdesktop_bg_parse_spec(MBDesktop *mb, char *spec)
     case BG_TILED_PXM:
     case BG_STRETCHED_PXM:
     case BG_CENTERED_PXM:
+    case BG_FILLED_PXM:
       mb->bg->data.filename = strdup(bg_def);
       break;
     case BG_GRADIENT_HORIZ:
@@ -780,14 +861,20 @@ usage(char *name)
           "  --no-outline                 Dont outline text\n"
 	  "  --no-title                   Dont render current folder title\n"
 	  "  --bg            <background definition>, like;\n\n"
-	  "\t\timg-stretched:<filename>\n"
-	  "\t\timg-tiled:<filename>\n"
+	  "\t\timg-stretched:<filename>  (distorts to fill screen)\n"
+	  "\t\timg-tiled:<filename>      (aka img-mosaic:<filename>)\n"
 	  "\t\timg-centered:<filename>\n"
+	  "\t\timg-filled:<filename>     (aka img-fill:<filename>,\n"
+	  "\t\t                           crops to fill, keeps aspect)\n"
 	  "\t\tcol-solid:<color definition>\n"
 	  "\t\tcol-gradient-vertical:<start color>,<end color>\n"
           "\t\tcol-gradient-horizontal:<start color>,<end color>\n\n"
 	  "Notes;\n"
 	  "  <col> is specified as a color name or an rgb def in the form 'rgb:r/g/b' or '#RGB\n"
+	  "  img-* filenames may be .png, .jpg/.jpeg, .xpm or .bmp\n"
+	  "  the resolved background is cached as raw pixels under\n"
+	  "  ~/.matchbox/wallpaper.cache so only the first run after a\n"
+	  "  change pays the decode/scale cost\n"
 	  "\n%s is copyright Matthew Allum 2003\n",
 	  name, name
 	  );
@@ -956,9 +1043,24 @@ mbdesktop_init(int argc, char **argv)
 
 
 
-  mb->atom_mb_theme = XInternAtom(mb->dpy, "_MB_THEME_NAME",False);
+  mb->atom_mb_theme     = XInternAtom(mb->dpy, "_MB_THEME_NAME",False);
+  mb->atom_mb_wallpaper = XInternAtom(mb->dpy, "_MB_WALLPAPER_SPEC",False);
 
   mbdesktop_get_theme_via_root_prop(mb);
+
+  /* --bg on the command line always wins. Otherwise prefer a live
+   * wallpaper handoff from the picker (root property) over the
+   * persisted choice from a previous run, and only fall through to
+   * the theme's default if neither is set. */
+  if (mb->bg_def == NULL)
+    {
+      char *live_spec = NULL, *persisted_spec;
+
+      if (mbdesktop_get_wallpaper_via_root_prop(mb, &live_spec))
+	mb->bg_def = live_spec;
+      else if ((persisted_spec = mbdesktop_wallpaper_read_persisted()) != NULL)
+	mb->bg_def = strdup(persisted_spec);
+    }
 
   if (mb->bg_def == NULL)
     {
@@ -1569,6 +1671,22 @@ mbdesktop_main(MBDesktop *mb)
 		{
 		  if (mbdesktop_get_theme_via_root_prop(mb))
 		    mbdesktop_switch_theme (mb, NULL );
+		}
+	      else if (ev.xproperty.atom == mb->atom_mb_wallpaper)
+		{
+		  char *live_spec = NULL;
+
+		  if (mbdesktop_get_wallpaper_via_root_prop(mb, &live_spec))
+		    {
+		      if (mb->bg_def) free(mb->bg_def);
+		      mb->bg_def = live_spec;
+
+		      mbdesktop_bg_parse_spec(mb, mb->bg_def);
+		      mbdesktop_view_init_bg(mb);
+
+		      if (mb->top_head_item != NULL)
+			mbdesktop_view_paint(mb, False);
+		    }
 		}
 	      break;
 	      /*

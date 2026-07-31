@@ -120,7 +120,16 @@ enum {
   BG_GRADIENT_HORIZ,
   BG_GRADIENT_VERT,
   BG_CENTERED_PXM,
+  BG_FILLED_PXM,
 };
+
+/* True for the bg types that come from a decoded image file on disk,
+ * as opposed to solid colors/gradients computed purely in memory --
+ * these are the ones eligible for the baked raw-pixel boot cache. */
+#define BG_IS_IMAGE_TYPE(t) ( (t) == BG_TILED_PXM     || \
+			       (t) == BG_STRETCHED_PXM || \
+			       (t) == BG_CENTERED_PXM  || \
+			       (t) == BG_FILLED_PXM )
 
 enum {
   HIGHLIGHT_OUTLINE,
@@ -292,7 +301,7 @@ typedef struct _mbdesktop {
 
   Atom window_type_atom, window_type_desktop_atom, desktop_manager_atom,
     window_type_dialog_atom, window_state_atom, window_state_modal_atom,
-    window_utf8_name_atom, utf8_atom, atom_mb_theme;
+    window_utf8_name_atom, utf8_atom, atom_mb_theme, atom_mb_wallpaper;
 
   char *top_level_name;
 

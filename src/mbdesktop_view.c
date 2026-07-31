@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include "mbdesktop_view.h"
+#include "mbdesktop_bg_cache.h"
 
 static void
 mbdesktop_view_paint_items(MBDesktop *mb, MBPixbufImage *img_dest);
@@ -19,13 +20,30 @@ _set_win_title(MBDesktop *mb, unsigned char *title)
 void
 mbdesktop_view_init_bg(MBDesktop *mb)
 {
-  MBPixbufImage *img_tmp;
-  int dw, dh, dx, dy, r, g, b;
+  MBPixbufImage *img_tmp, *img_scaled;
+  int dw, dh, dx, dy, r, g, b, scale_w, scale_h;
 
   mb->font_col_type = DKTP_FONT_COL_UNKOWN;
 
   if (mb->bg_img != NULL)
     mb_pixbuf_img_free(mb->pixbuf, mb->bg_img);
+
+  /* Image-based backgrounds (as opposed to solid/gradient, which are
+   * already pure in-memory math) may already be baked on disk from a
+   * previous run -- try that first and skip decode/scale entirely. */
+  if (BG_IS_IMAGE_TYPE(mb->bg->type))
+    {
+      mb->bg_img = mbdesktop_bg_cache_load(mb);
+
+      if (mb->bg_img != NULL)
+	{
+	  if (!mb->user_overide_font_outline) mb->use_text_outline = True;
+	  if (!mb->user_overide_font_col) mbdesktop_set_font_color(mb, "white");
+
+	  mbdesktop_view_set_root_pixmap(mb, mb->bg_img);
+	  return;
+	}
+    }
 
   switch (mb->bg->type)
     {
@@ -136,6 +154,51 @@ mbdesktop_view_init_bg(MBDesktop *mb)
       if (!mb->user_overide_font_col) mbdesktop_set_font_color(mb, "white");
 
       break;
+    case BG_FILLED_PXM:
+      if ((img_tmp = mb_pixbuf_img_new_from_file(mb->pixbuf,
+						 mb->bg->data.filename))
+	  == NULL)
+	{
+	  fprintf(stderr,"Failed to load background : %s", mb->bg->data.filename);
+	  mbdesktop_bg_parse_spec(mb, "col-solid:red");
+	  mbdesktop_view_init_bg(mb);
+	  return;
+	}
+
+      /* Scale to *cover* the desktop while keeping aspect ratio, then
+       * center-crop the overflow -- unlike BG_STRETCHED_PXM this never
+       * distorts the image. */
+      if (img_tmp->width * mb->desktop_height > img_tmp->height * mb->desktop_width)
+	{
+	  scale_h = mb->desktop_height;
+	  scale_w = (img_tmp->width * mb->desktop_height) / img_tmp->height;
+	}
+      else
+	{
+	  scale_w = mb->desktop_width;
+	  scale_h = (img_tmp->height * mb->desktop_width) / img_tmp->width;
+	}
+      /* Integer division above can round a hair short -- never leave
+       * a sliver of canvas uncovered. */
+      if (scale_w < mb->desktop_width)  scale_w = mb->desktop_width;
+      if (scale_h < mb->desktop_height) scale_h = mb->desktop_height;
+
+      img_scaled = mb_pixbuf_img_scale(mb->pixbuf, img_tmp, scale_w, scale_h);
+      mb_pixbuf_img_free(mb->pixbuf, img_tmp);
+
+      dx = (scale_w - mb->desktop_width)  / 2;
+      dy = (scale_h - mb->desktop_height) / 2;
+
+      mb->bg_img = mb_pixbuf_img_rgb_new(mb->pixbuf, mb->desktop_width,
+					 mb->desktop_height);
+      mb_pixbuf_img_copy(mb->pixbuf, mb->bg_img, img_scaled,
+			 dx, dy, mb->desktop_width, mb->desktop_height, 0, 0);
+      mb_pixbuf_img_free(mb->pixbuf, img_scaled);
+
+      if (!mb->user_overide_font_outline) mb->use_text_outline = True;
+      if (!mb->user_overide_font_col) mbdesktop_set_font_color(mb, "white");
+
+      break;
     case BG_GRADIENT_HORIZ:
       mb->bg_img = mb_pixbuf_img_rgb_new(mb->pixbuf, mb->desktop_width, 
 					 mb->desktop_height);
@@ -184,6 +247,12 @@ mbdesktop_view_init_bg(MBDesktop *mb)
 
       break;
     }
+
+  /* We only reach here via the decode/scale path (the cache-hit path
+   * above returns early), so this is exactly the point at which it's
+   * worth baking the result for next time. */
+  if (BG_IS_IMAGE_TYPE(mb->bg->type) && mb->bg_img != NULL)
+    mbdesktop_bg_cache_save(mb, mb->bg_img);
 
   /* Now set the background */
   mbdesktop_view_set_root_pixmap(mb, mb->bg_img);
