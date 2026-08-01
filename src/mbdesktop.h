@@ -53,9 +53,16 @@
 #define DBG(txt, args... ) /* nothing */
 #endif
 
-#define ITEM_WIDTH  96 /* 48 */ 
-#define ITEM_HEIGHT 108 /* 54 */ 
+#define ITEM_WIDTH  96 /* 48 */
+#define ITEM_HEIGHT 108 /* 54 */
 #define ICON_SIZE   64 /* 32 */
+
+/* Pager strip at the bottom of the launcher. The arrows are drawn at
+ * PAGER_ICON_SIZE but tapped over a third of the strip each, so the size
+ * here is a legibility choice, not a hit-target one. PAGER_PAD is the
+ * breathing room above and below the taller of arrow and page text. */
+#define PAGER_ICON_SIZE 16
+#define PAGER_PAD        6
 
 #ifdef MB_HAVE_PNG
 #define NO_APP_ICON    "mbnoapp.png"
@@ -231,6 +238,7 @@ typedef struct _mbdesktop {
   Bool have_focus;
   Bool user_overide_font_col;
   Bool user_overide_font_outline;
+  Bool user_overide_title;
 
   int                     current_view; 		
   MBDesktopItemDimentions itemDim;
@@ -240,9 +248,11 @@ typedef struct _mbdesktop {
   MBDesktopItem           *top_head_item;      /* Very top of item list  */
   MBDesktopItem           *current_head_item;  /* Top of each child list */
   MBDesktopItem           *kbd_focus_item;     /* Kdb focused item       */
-  MBDesktopItem           *scroll_offset_item; /* Initially displayed item if 
-						  scrolled */
-  MBDesktopItem           *last_visible_item; 
+  MBDesktopItem           *scroll_offset_item; /* First item of the current
+						  page -- derived from
+						  current_page, never
+						  advanced item by item */
+  MBDesktopItem           *last_visible_item;  /* One past the last painted */
   MBDesktopItem           *current_folder_item; /* The current opened folder */
 
   Bool                     had_kbd_input;
@@ -261,9 +271,34 @@ typedef struct _mbdesktop {
 
   Pixmap                  root_pxm;
 
-  MBPixbufImage *img_scroll_up;
-  MBPixbufImage *img_scroll_down;
-  Bool           scroll_active;
+  /* Pagination.
+   *
+   * The launcher lays every application out on a fixed grid and flips
+   * whole pages, rather than scrolling the list by rows the way the
+   * folder-based desktop used to. current_page is the only piece of
+   * state that survives a repaint: items_per_page/n_pages and the
+   * scroll_offset_item/last_visible_item window are all recomputed from
+   * it, so a workarea change (panel appearing, screen rotation) cannot
+   * leave the view pointing at half a page.
+   *
+   * The two arrow images are the theme's 16x16 mbup.png rotated a
+   * quarter turn each way -- see mbdesktop_set_pager_buttons(). Using
+   * one source for both guarantees they are mirror images of each
+   * other, which loading mbup/mbdown separately would not.
+   */
+  MBPixbufImage *img_page_prev;
+  MBPixbufImage *img_page_next;
+
+  int            current_page;      /* 0-based */
+  int            n_pages;
+  int            items_per_page;
+  int            pager_offset;      /* height reserved at the bottom, 0
+				       when everything fits on one page */
+
+  /* Tap targets, not the drawn glyphs: each covers a third of the pager
+   * strip so a stylus does not have to find a 16x16 arrow. */
+  XRectangle     pager_prev_rect;
+  XRectangle     pager_next_rect;
 
   MBPixbufImage *bg_img;
   MBDesktopBG *bg;
@@ -401,7 +436,20 @@ void
 mbdesktop_switch_theme (MBDesktop *mb, char *theme_name );
 
 void
-mbdesktop_set_scroll_buttons(MBDesktop *mb);
+mbdesktop_set_pager_buttons(MBDesktop *mb);
+
+/* Number of items in the currently displayed list. */
+int
+mbdesktop_page_item_count (MBDesktop *mb);
+
+/* Which page `item` falls on, or -1 if it is not in the current list. */
+int
+mbdesktop_page_of_item (MBDesktop *mb, MBDesktopItem *item);
+
+/* Show page `page` (clamped), moving the keyboard focus onto it. Repaints
+ * only if the page actually changed; returns True if it did. */
+Bool
+mbdesktop_page_goto (MBDesktop *mb, int page);
 
 int
 mbdesktop_current_folder_view ( MBDesktop *mb );

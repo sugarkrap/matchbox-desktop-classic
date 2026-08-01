@@ -629,10 +629,16 @@ mbdesktop_item_folder_activate_cb(void *data1, void *data2)
   if (mb->scroll_offset_item)
     item->saved_scroll_offset_item = mb->scroll_offset_item; 
 
-  mb->scroll_offset_item = mb->kbd_focus_item 
+  mb->scroll_offset_item = mb->kbd_focus_item
     = mb->current_head_item = item->item_child;
 
-  mb->current_folder_item = item; 
+  /* A different list means a different set of pages -- start at its
+   * first, or the page number left over from the list we came from would
+   * be applied to this one. (The flat launcher has no folders of its own
+   * any more, but the tasks module still contributes one.) */
+  mb->current_page = 0;
+
+  mb->current_folder_item = item;
 
   if (mb->kbd_focus_item->item_next_sibling)
     mb->kbd_focus_item = mb->kbd_focus_item->item_next_sibling;
@@ -658,6 +664,10 @@ mbdesktop_item_folder_prev_activate_cb(void *data1, void *data2)
 	mb->scroll_offset_item = item->item_parent->saved_scroll_offset_item;
 
       item->item_parent->saved_scroll_offset_item = NULL;
+
+      /* No current_page fixup needed on the way back out: the page is
+       * derived from kbd_focus_item, which was just pointed at the folder
+       * we came from. See mbdesktop_calculate_item_dimentions(). */
       
       mb->current_folder_item = item->item_parent->item_parent; 
       

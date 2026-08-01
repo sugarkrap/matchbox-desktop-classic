@@ -6,6 +6,112 @@
 static void
 mbdesktop_view_paint_items(MBDesktop *mb, MBPixbufImage *img_dest);
 
+/* mb_pixbuf_img_copy_composite_with_alpha() takes an *offset* added to
+ * each source pixel's alpha, not a multiplier: 0 leaves the image as
+ * authored, and a negative value fades it. This one leaves the arrow that
+ * cannot be followed at roughly a quarter opacity -- visible enough to
+ * show the control exists, faint enough to read as unavailable. Dimming
+ * rather than hiding keeps the strip's layout stable between pages. */
+#define PAGER_ARROW_ENABLED_ALPHA     0
+#define PAGER_ARROW_DISABLED_ALPHA (-195)
+
+/* Paint the pager's two arrows into the image the items were composited
+ * into, and record where they can be tapped.
+ *
+ * Split from mbdesktop_view_pager_paint_text() because the two halves want
+ * different surfaces: the arrows have an alpha channel and must be
+ * composited against the wallpaper while it is still an MBPixbufImage,
+ * whereas text can only be laid out onto the backing MBDrawable, which
+ * does not exist until that image has been rendered to it.
+ */
+static void
+mbdesktop_view_pager_paint_arrows(MBDesktop *mb, MBPixbufImage *img_dest)
+{
+  int strip_y, icon_y, third, arrow_w, arrow_h;
+
+  /* Nothing to page through: leave the rects zero-sized so taps in the
+   * bottom strip fall through to the wallpaper, as they did before. */
+  if (mb->pager_offset <= 0 || mb->n_pages < 2
+      || mb->img_page_prev == NULL || mb->img_page_next == NULL)
+    {
+      memset(&mb->pager_prev_rect, 0, sizeof(XRectangle));
+      memset(&mb->pager_next_rect, 0, sizeof(XRectangle));
+      return;
+    }
+
+  arrow_w = mb_pixbuf_img_get_width(mb->img_page_prev);
+  arrow_h = mb_pixbuf_img_get_height(mb->img_page_prev);
+
+  strip_y = mb->workarea_y + mb->workarea_height - mb->pager_offset;
+  icon_y  = strip_y + ((mb->pager_offset - arrow_h) / 2);
+
+  /* Thirds: arrows sit centred in the outer two, the page text in the
+   * middle one. Tapping anywhere in a third counts, which on a 640px
+   * screen is a ~210px target for a 16px glyph. */
+  third = mb->workarea_width / 3;
+
+  mb->pager_prev_rect.x      = mb->workarea_x;
+  mb->pager_prev_rect.y      = strip_y;
+  mb->pager_prev_rect.width  = third;
+  mb->pager_prev_rect.height = mb->pager_offset;
+
+  mb->pager_next_rect.x      = mb->workarea_x + (2 * third);
+  mb->pager_next_rect.y      = strip_y;
+  mb->pager_next_rect.width  = mb->workarea_width - (2 * third);
+  mb->pager_next_rect.height = mb->pager_offset;
+
+  mb_pixbuf_img_copy_composite_with_alpha
+    (mb->pixbuf, img_dest, mb->img_page_prev,
+     0, 0, arrow_w, arrow_h,
+     mb->pager_prev_rect.x + ((third - arrow_w) / 2), icon_y,
+     mb->current_page > 0 ? PAGER_ARROW_ENABLED_ALPHA
+                          : PAGER_ARROW_DISABLED_ALPHA);
+
+  mb_pixbuf_img_copy_composite_with_alpha
+    (mb->pixbuf, img_dest, mb->img_page_next,
+     0, 0, arrow_w, arrow_h,
+     mb->pager_next_rect.x + ((int)mb->pager_next_rect.width - arrow_w) / 2,
+     icon_y,
+     mb->current_page < (mb->n_pages - 1) ? PAGER_ARROW_ENABLED_ALPHA
+                                          : PAGER_ARROW_DISABLED_ALPHA);
+}
+
+/* The "2 / 4" between the arrows. Runs after the items have been rendered
+ * to the backing drawable -- see the note above. */
+void
+mbdesktop_view_pager_paint_text(MBDesktop *mb)
+{
+  MBLayout      *layout;
+  unsigned char  buf[32];	/* what mb_layout_set_text() takes */
+  int            third, text_y, opts;
+
+  if (mb->pager_offset <= 0 || mb->n_pages < 2) return;
+
+  snprintf((char *)buf, sizeof(buf), "%d / %d",
+	   mb->current_page + 1, mb->n_pages);
+
+  third  = mb->workarea_width / 3;
+  text_y = mb->workarea_y + mb->workarea_height - mb->pager_offset;
+
+  opts = MB_FONT_RENDER_OPTS_CLIP_TRAIL
+         | MB_FONT_RENDER_ALIGN_CENTER
+         | MB_FONT_RENDER_VALIGN_MIDDLE;
+
+  if (mb->use_text_outline)
+    opts |= MB_FONT_RENDER_EFFECT_SHADOW;
+
+  layout = mb_layout_new();
+
+  mb_layout_set_font(layout, mb->font);
+  mb_layout_set_geometry(layout, third, mb->pager_offset);
+  mb_layout_set_text(layout, buf, MB_ENCODING_UTF8);
+
+  mb_layout_render(layout, mb->backing_cache,
+		   mb->workarea_x + third, text_y, opts);
+
+  mb_layout_unref(layout);
+}
+
 static void
 _set_win_title(MBDesktop *mb, unsigned char *title)
 {
@@ -434,8 +540,14 @@ mbdesktop_view_paint(MBDesktop *mb, Bool use_cache)
   /* no items to paint - current item is very top - no items loaded */
   if (mb->current_head_item == mb->top_head_item)
     {
-      mb_pixbuf_img_render_to_drawable(mb->pixbuf, img_dest, 
-				       mb_drawable_pixmap(mb->backing_cache), 
+      /* Called even here so that the pager's tap rects are always
+       * refreshed on a full repaint -- this path zeroes them, so a tap in
+       * the bottom strip of an empty launcher cannot hit a rect left over
+       * from when there were pages. */
+      mbdesktop_view_pager_paint_arrows(mb, img_dest);
+
+      mb_pixbuf_img_render_to_drawable(mb->pixbuf, img_dest,
+				       mb_drawable_pixmap(mb->backing_cache),
 				       0, 0);
     }
   else
@@ -448,13 +560,32 @@ mbdesktop_view_paint(MBDesktop *mb, Bool use_cache)
     }
      
   if (mb->current_head_item->item_parent)
-    folder_title 
+    folder_title
       = (mb->current_head_item->item_parent->name_extended) ? strdup(mb->current_head_item->item_parent->name_extended) : strdup(mb->current_head_item->item_parent->name);
-  else 
-    folder_title 
+  else
+    folder_title
       = (mb->top_head_item->name_extended) ? strdup(mb->top_head_item->name_extended) : strdup(mb->top_head_item->name);
 
+  /* The header used to say which folder you had descended into. There are
+   * no folders any more, so it says where you are in the pages instead --
+   * the same "you are here" job, for the axis that still varies. */
+  if (mb->n_pages > 1)
+    {
+      size_t  len    = strlen(folder_title) + 32;
+      char   *titled = malloc(len);
+
+      if (titled)
+	{
+	  snprintf(titled, len, "%s  (%d/%d)", folder_title,
+		   mb->current_page + 1, mb->n_pages);
+	  free(folder_title);
+	  folder_title = titled;
+	}
+    }
+
   mbdesktop_view_header_paint(mb, folder_title);
+
+  mbdesktop_view_pager_paint_text(mb);
 
   XSetWindowBackgroundPixmap(mb->dpy, mb->win_top_level, 
 			     mb_drawable_pixmap(mb->backing_cache));
@@ -481,35 +612,26 @@ mbdesktop_view_paint_list(MBDesktop *mb, MBPixbufImage *dest_img)
   MBPixbufImage *icon_img_small;
   MBLayout *layout = NULL;
 
-  int cur_y, cur_x, limit_y;
+  int cur_y, cur_x, limit_y, painted = 0;
 
-
-  if (mb->scroll_offset_item  == mb->current_head_item)
-    mb->scroll_active = False;
-  else
-    mb->scroll_active = True;
+  /* Grid and page window both come from
+   * mbdesktop_calculate_item_dimentions() -- see the note in
+   * mbdesktop_view_paint_items(). */
 
   cur_x = mb->workarea_x + ((48-32)/2);
   cur_y = mb->workarea_y + mb->title_offset; /* + mb->win_plugin_rect.height; */
-  limit_y = mb->workarea_y + mb->workarea_height - mb->title_offset; /*  - mb->win_plugin_rect.height; */
+  limit_y = mb->workarea_y + mb->workarea_height
+            - mb->title_offset - mb->pager_offset;
 
-  mb->current_view_columns = 1;
-  mb->current_view_rows 
-    = ( mb->workarea_height - mb->title_offset /* - mb->win_plugin_rect.height */) / mb->icon_size ;
-
-
-  for(item = mb->scroll_offset_item; 
-      item != NULL; 
-      item = item->item_next_sibling)
+  for(item = mb->scroll_offset_item;
+      item != NULL && painted < mb->items_per_page;
+      item = item->item_next_sibling, painted++)
     {
       if (item->icon)
 	{
 	  if ( (cur_y + mb->item_height ) > limit_y) /* Off display ? */
-	    {
-	      mb->scroll_active = True;
-	      break;
-	    }
-	  
+	    break;
+
 	  if (mbdesktop_current_folder_view ( mb ) != VIEW_TEXT_ONLY)
 	    {
 	      
@@ -538,17 +660,7 @@ mbdesktop_view_paint_list(MBDesktop *mb, MBPixbufImage *dest_img)
     }
   
 
-  if (mb->scroll_active)
-    {
-      mb_pixbuf_img_composite(mb->pixbuf, dest_img, mb->img_scroll_up,
-			      mb->workarea_x + mb->workarea_width-24, 
-			      mb->workarea_y + 2);
-      
-      mb_pixbuf_img_composite(mb->pixbuf, dest_img,
-			      mb->img_scroll_down, 
-			      mb->workarea_x + mb->workarea_width-40, 
-			      mb->workarea_y + 2);
-    }
+  mbdesktop_view_pager_paint_arrows(mb, dest_img);
 
 
   mb_pixbuf_img_render_to_drawable(mb->pixbuf, dest_img, 
@@ -610,29 +722,21 @@ mbdesktop_view_paint_items(MBDesktop *mb, MBPixbufImage *img_dest)
   MBDesktopItem *item;
   MBPixbufImage *icon_img_small;
 
-  int cur_x = 0, cur_y = 0, limit_x, limit_y, cur_row = 1;
+  int cur_x = 0, cur_y = 0, limit_x, cur_row = 1, painted = 0;
   int item_horiz_border = (mb->item_width-(mb->icon_size))/2;
 
-
-  if (mb->scroll_offset_item  == mb->current_head_item)
-    mb->scroll_active = False;
-  else
-    mb->scroll_active = True;
+  /* The grid and the page window were both worked out by
+   * mbdesktop_calculate_item_dimentions(), which runs at the top of every
+   * full repaint -- this walks exactly one page from there. */
 
   cur_x = mb->workarea_x;
   cur_y = mb->workarea_y + mb->title_offset; /* + mb->win_plugin_rect.height; */
 
   limit_x = mb->workarea_x + mb->workarea_width;
-  limit_y = mb->workarea_y + mb->workarea_height - mb->title_offset; /* - mb->win_plugin_rect.height; */
 
-  mb->current_view_columns = mb->workarea_width  / mb->item_width;
-  mb->current_view_rows  
-    = ( mb->workarea_height - mb->title_offset /* - mb->win_plugin_rect.height */) / mb->item_height;
-
-
-  for(item = mb->scroll_offset_item; 
-      item != NULL; 
-      item = item->item_next_sibling)
+  for(item = mb->scroll_offset_item;
+      item != NULL && painted < mb->items_per_page;
+      item = item->item_next_sibling, painted++)
     {
       if (item->type == ITEM_TYPE_MODULE_WINDOW)
 	{
@@ -672,16 +776,11 @@ mbdesktop_view_paint_items(MBDesktop *mb, MBPixbufImage *img_dest)
 
 	      cur_row++;
 
-	      //if ( (cur_y+mb->item_height) > limit_y) /* Off display ? */
-	      if (cur_row >   mb->current_view_rows ) 
-		{
-
-		  /* 
-		     set a flag to turn on scrolling
-		  */
-		  mb->scroll_active = True;
-		  break;
-		}
+	      /* Belt and braces: `painted < items_per_page` already bounds
+	       * this walk to one page, so the row count can only run over
+	       * if that arithmetic and this layout ever disagree. */
+	      if (cur_row > mb->current_view_rows)
+		break;
 	    }
 
 	  item->x      = cur_x;
@@ -715,21 +814,10 @@ mbdesktop_view_paint_items(MBDesktop *mb, MBPixbufImage *img_dest)
 	}
     }
 
-  if (mb->scroll_active)
-    {
-      mb_pixbuf_img_composite(mb->pixbuf, img_dest, mb->img_scroll_up,
-			      mb->workarea_x + mb->workarea_width-24, 
-			      mb->workarea_y + 2);
-    
-      mb_pixbuf_img_composite(mb->pixbuf, img_dest, mb->img_scroll_down, 
-			      mb->workarea_x + mb->workarea_width-40, 
-			      mb->workarea_y + 2);
+  mbdesktop_view_pager_paint_arrows(mb, img_dest);
 
-    }
-
-
-  mb_pixbuf_img_render_to_drawable(mb->pixbuf, img_dest, 
-				   mb_drawable_pixmap(mb->backing_cache), 
+  mb_pixbuf_img_render_to_drawable(mb->pixbuf, img_dest,
+				   mb_drawable_pixmap(mb->backing_cache),
 				   0, 0);
 
   mb->last_visible_item = item;

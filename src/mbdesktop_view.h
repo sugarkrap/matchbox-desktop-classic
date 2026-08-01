@@ -29,8 +29,14 @@ mbdesktop_view_paint(MBDesktop *mb, Bool use_cache);
 void
 mbdesktop_view_paint_list(MBDesktop *mb, MBPixbufImage *dest_img);
 
-void 
+void
 mbdesktop_view_paint_icons(MBDesktop *mb, MBPixbufImage *img_dest);
+
+/* The "n / m" between the pager arrows. The arrows themselves are drawn
+ * by a static in mbdesktop_view.c -- they go into the item image, this
+ * goes onto the backing drawable afterwards. */
+void
+mbdesktop_view_pager_paint_text(MBDesktop *mb);
 
 void
 mbdesktop_view_item_highlight (MBDesktop     *mb, 
