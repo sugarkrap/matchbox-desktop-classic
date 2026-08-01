@@ -109,6 +109,8 @@ add_a_dotdesktop_item (MBDesktop     *mb,
 {
   MBDesktopItem  *item_new = NULL, *item_before, *found_folder_item = NULL;
   Bool            have_attached = False;
+  char           *exec_str = NULL;
+  unsigned char  *heavy = NULL;   /* mb_dotdesktop_get returns unsigned char * */
 
   if (folder)
     found_folder_item = folder;
@@ -116,11 +118,59 @@ add_a_dotdesktop_item (MBDesktop     *mb,
     found_folder_item = match_folder( mb, mb_dotdesktop_get(dd, "Categories"));
 
   if ( found_folder_item == NULL) return;
-      
+
+  exec_str = mb_dotdesktop_get_exec(dd);
+
+  /*
+   * X-Piko-Heavy: applications that need the whole machine.
+   *
+   * Some things here (Quake, emulators, video players) want every cycle and
+   * every megabyte, and want /dev/fb0 to themselves. That cannot be shared
+   * with the X server, so they have to be run with the graphical session
+   * stopped -- see userspace/src/matchbox-fbrun.cxx, which asks the user
+   * first, closes everything else, and puts the desktop back afterwards.
+   *
+   * Doing the rewrite HERE rather than in the activate callbacks means all
+   * three of them (plain, StartupNotify, SingleInstance) inherit it, since
+   * every one of them just execs item->data.
+   *
+   * The Desktop Entry spec has no key for this and reserves the X- prefix
+   * for exactly this sort of extension, so other implementations are
+   * required to ignore it. Name is passed through for the dialog text.
+   */
+  heavy = mb_dotdesktop_get(dd, "X-Piko-Heavy");
+  if (heavy && (!strcasecmp((char *)heavy, "true")
+		|| !strcmp((char *)heavy, "1")))
+    {
+      char *nm     = (char *)mb_dotdesktop_get(dd, "Name");
+      char *reason = (char *)mb_dotdesktop_get(dd, "X-Piko-Heavy-Reason");
+      char *wrapped;
+      int   len;
+
+      if (nm == NULL) nm = "This application";
+
+      /* "matchbox-fbrun -n 'NAME' -r 'REASON' -- EXEC" plus quoting slack. */
+      len = strlen(exec_str) + strlen(nm)
+            + (reason ? strlen(reason) : 0) + 64;
+
+      wrapped = malloc(len);
+      if (wrapped)
+	{
+	  if (reason)
+	    snprintf(wrapped, len, "matchbox-fbrun -n '%s' -r '%s' -- %s",
+		     nm, reason, exec_str);
+	  else
+	    snprintf(wrapped, len, "matchbox-fbrun -n '%s' -- %s",
+		     nm, exec_str);
+	  free(exec_str);
+	  exec_str = wrapped;
+	}
+    }
+
   item_new = mbdesktop_item_new_with_params( mb,
 					     mb_dotdesktop_get(dd, "Name"),
 					     mb_dotdesktop_get(dd, "Icon"),
-					     (void *)mb_dotdesktop_get_exec(dd),
+					     (void *)exec_str,
 					     ITEM_TYPE_DOTDESKTOP_ITEM
 					     );
   if (item_new == NULL ) return;
