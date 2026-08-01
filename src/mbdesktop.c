@@ -526,7 +526,7 @@ mbdesktop_switch_theme (MBDesktop *mb, char *theme_name )
     mbdesktop_switch_bg_theme(mb);    
 
   mbdesktop_switch_icon_theme(mb, mb->top_head_item); 
-  mbdesktop_set_scroll_buttons(mb);
+  mbdesktop_set_pager_buttons(mb);
 
   if (mb->bg_img && mb->top_head_item != NULL)
     mbdesktop_view_paint(mb, False);
@@ -726,10 +726,88 @@ mbdesktop_set_font_color(MBDesktop *mb, char *spec)
   mb_col_set (mb->fgcol, spec);
 }
 
-/* Calculate various pos/size params fro current view */
+/* Count the items in the list currently on screen. */
+int
+mbdesktop_page_item_count (MBDesktop *mb)
+{
+  MBDesktopItem *item;
+  int            n = 0;
+
+  if (mb->current_head_item == NULL
+      || mb->current_head_item == mb->top_head_item)
+    return 0;
+
+  for (item = mb->current_head_item; item != NULL;
+       item = item->item_next_sibling)
+    n++;
+
+  return n;
+}
+
+int
+mbdesktop_page_of_item (MBDesktop *mb, MBDesktopItem *item)
+{
+  MBDesktopItem *cur;
+  int            n = 0;
+
+  if (item == NULL || mb->items_per_page < 1) return -1;
+
+  for (cur = mb->current_head_item; cur != NULL;
+       cur = cur->item_next_sibling, n++)
+    if (cur == item)
+      return n / mb->items_per_page;
+
+  return -1;
+}
+
+/* First item of `page`, or NULL if the list is empty. Walks rather than
+ * indexes because the items are a plain doubly-linked list -- at the couple
+ * of dozen entries a handheld's application menu actually holds that costs
+ * nothing, and it keeps one representation of the list rather than two. */
+static MBDesktopItem *
+page_first_item (MBDesktop *mb, int page)
+{
+  MBDesktopItem *item = mb->current_head_item;
+  int            skip = page * mb->items_per_page;
+
+  if (item == NULL) return NULL;
+
+  while (skip-- > 0 && item->item_next_sibling != NULL)
+    item = item->item_next_sibling;
+
+  return item;
+}
+
+/* Show page `page` (clamped). Returns True if the page actually changed. */
+Bool
+mbdesktop_page_goto (MBDesktop *mb, int page)
+{
+  if (page < 0)            page = 0;
+  if (page >= mb->n_pages) page = mb->n_pages - 1;
+
+  if (page == mb->current_page) return False;
+
+  mb->current_page = page;
+
+  /* Land the selection on the page the user just turned to, so the next
+   * arrow key continues from what is on screen rather than from an item
+   * that is no longer displayed. */
+  mb->kbd_focus_item = page_first_item(mb, page);
+
+  mbdesktop_view_paint(mb, False);
+
+  return True;
+}
+
+/* Calculate various pos/size params for the current view, including how the
+ * item grid divides into pages. Called at the top of every full repaint, so
+ * everything downstream can trust items_per_page/n_pages to describe the
+ * geometry that is about to be painted. */
 void
 mbdesktop_calculate_item_dimentions(MBDesktop *mb)
 {
+  int n_items, usable_height, text_height;
+
   if (mb->use_title_header)
     mb->title_offset = mb_font_get_height(mb->titlefont) + 4;
   else
@@ -758,59 +836,134 @@ mbdesktop_calculate_item_dimentions(MBDesktop *mb)
       break;
     }
 
+  if (mb->item_width  < 1) mb->item_width  = 1;
+  if (mb->item_height < 1) mb->item_height = 1;
+
+  /* Reserve the pager strip before dividing the remaining height into
+   * rows, or the bottom row of icons would be painted underneath it.
+   * Sized to whichever of the arrow and the "2 / 4" text is taller. */
+  text_height = mb_font_get_height(mb->font);
+  mb->pager_offset = (text_height > PAGER_ICON_SIZE
+		      ? text_height : PAGER_ICON_SIZE) + (2 * PAGER_PAD);
+
+  n_items       = mbdesktop_page_item_count(mb);
+  usable_height = mb->workarea_height - mb->title_offset - mb->pager_offset;
+
+  if (mbdesktop_current_folder_view ( mb ) == VIEW_LIST
+      || mbdesktop_current_folder_view ( mb ) == VIEW_TEXT_ONLY)
+    mb->current_view_columns = 1;
+  else
+    mb->current_view_columns = mb->workarea_width / mb->item_width;
+
+  mb->current_view_rows = usable_height / mb->item_height;
+
+  if (mb->current_view_columns < 1) mb->current_view_columns = 1;
+  if (mb->current_view_rows    < 1) mb->current_view_rows    = 1;
+
+  mb->items_per_page = mb->current_view_columns * mb->current_view_rows;
+
+  mb->n_pages = (n_items + mb->items_per_page - 1) / mb->items_per_page;
+  if (mb->n_pages < 1) mb->n_pages = 1;
+
+  /* A list that shrank -- an application uninstalled, a card removed, or
+   * simply a bigger workarea -- can leave us past the end. */
+  if (mb->current_page >= mb->n_pages) mb->current_page = mb->n_pages - 1;
+  if (mb->current_page < 0)            mb->current_page = 0;
+
+  /* One page means no pager to draw, so give its strip back to the grid
+   * rather than leaving a blank band along the bottom. */
+  if (mb->n_pages < 2)
+    {
+      mb->pager_offset = 0;
+
+      mb->current_view_rows
+	= (mb->workarea_height - mb->title_offset) / mb->item_height;
+      if (mb->current_view_rows < 1) mb->current_view_rows = 1;
+
+      mb->items_per_page = mb->current_view_columns * mb->current_view_rows;
+    }
+
+  /* The page follows the selection, not the other way round.
+   *
+   * Everything that deliberately turns a page also moves kbd_focus_item
+   * onto it -- mbdesktop_page_goto() and the arrow-key handler both do --
+   * so deriving the page from the selection agrees with them, and is
+   * additionally right for the cases that only move the selection: coming
+   * back out of a folder, a reload resetting to the first item, or the
+   * grid reflowing under a changed workarea. In that last case the
+   * selected item stays on screen instead of the view jumping.
+   *
+   * A focus that is not in this list at all (page -1) leaves the clamped
+   * current_page above standing. */
+  if (mb->kbd_focus_item != NULL)
+    {
+      int focus_page = mbdesktop_page_of_item(mb, mb->kbd_focus_item);
+
+      if (focus_page >= 0) mb->current_page = focus_page;
+    }
+
+  /* Resolve the page number into the window the painters actually walk. */
+  mb->scroll_offset_item = page_first_item(mb, mb->current_page);
 }
 
+/* Load the pager's left/right arrows.
+ *
+ * matchbox-common ships mbup.png and mbdown.png and nothing pointing
+ * sideways, so the arrows are made here by rotating a loaded image a
+ * quarter turn. Both come from mbup.png rather than one from each file:
+ * rotating a single source in opposite directions guarantees the two
+ * arrows are exact mirror images, which mbup/mbdown are not required to
+ * be and, in the stock theme, are not.
+ *
+ * Called again on every theme switch, exactly as the scroll buttons this
+ * replaces were, so the arrows follow the theme's icon set.
+ */
 void
-mbdesktop_set_scroll_buttons(MBDesktop *mb)
+mbdesktop_set_pager_buttons(MBDesktop *mb)
 {
-  /* XXX free existing */
-  MBPixbufImage *img_tmp = NULL;
+  MBPixbufImage *img_src = NULL, *img_tmp = NULL;
 
 #ifdef MB_HAVE_PNG
 #define UP_IMG   "mbup.png"
-#define DOWN_IMG "mbdown.png"
 #else
 #define UP_IMG   "mbup.xpm"
-#define DOWN_IMG "mbdown.xpm"
 #endif
 
-  if (mb->img_scroll_up) mb_pixbuf_img_free(mb->pixbuf, mb->img_scroll_up);
-  if (mb->img_scroll_down) mb_pixbuf_img_free(mb->pixbuf, mb->img_scroll_down);
+  if (mb->img_page_prev) mb_pixbuf_img_free(mb->pixbuf, mb->img_page_prev);
+  if (mb->img_page_next) mb_pixbuf_img_free(mb->pixbuf, mb->img_page_next);
 
-  /* scroll buttons */
-  if ((mb->img_scroll_up = mb_pixbuf_img_new_from_file(mb->pixbuf,
-						       mb_dot_desktop_icon_get_full_path (mb->theme_name, 16, UP_IMG)))
+  mb->img_page_prev = mb->img_page_next = NULL;
+
+  if ((img_src = mb_pixbuf_img_new_from_file(mb->pixbuf,
+					     mb_dot_desktop_icon_get_full_path (mb->theme_name, PAGER_ICON_SIZE, UP_IMG)))
       == NULL)
     {
-      fprintf(stderr, "matchbox-bdesktop: Cannot load %s - is matchbox-common installed ? Cannot continue.\n", UP_IMG);
+      fprintf(stderr, "matchbox-desktop: Cannot load %s - is matchbox-common installed ? Cannot continue.\n", UP_IMG);
       exit(1);
     }
 
-  if ((mb->img_scroll_down = mb_pixbuf_img_new_from_file(mb->pixbuf, 
-							 mb_dot_desktop_icon_get_full_path (mb->theme_name, 16, DOWN_IMG)))
-      == NULL)
+  if (mb_pixbuf_img_get_width(img_src) != PAGER_ICON_SIZE
+      || mb_pixbuf_img_get_height(img_src) != PAGER_ICON_SIZE)
     {
-      fprintf(stderr, "matchbox-desktop: Cannot load %s  - is matchbox-common installed ? Cannot continue.\n", DOWN_IMG);
+      img_tmp = mb_pixbuf_img_scale (mb->pixbuf, img_src,
+				     PAGER_ICON_SIZE, PAGER_ICON_SIZE);
+      mb_pixbuf_img_free(mb->pixbuf, img_src);
+      img_src = img_tmp;
+    }
+
+  /* Anticlockwise points the up arrow left, clockwise points it right. */
+  mb->img_page_prev = mb_pixbuf_img_transform (mb->pixbuf, img_src,
+					       MBPIXBUF_TRANS_ROTATE_270);
+  mb->img_page_next = mb_pixbuf_img_transform (mb->pixbuf, img_src,
+					       MBPIXBUF_TRANS_ROTATE_90);
+
+  mb_pixbuf_img_free(mb->pixbuf, img_src);
+
+  if (mb->img_page_prev == NULL || mb->img_page_next == NULL)
+    {
+      fprintf(stderr, "matchbox-desktop: failed to build pager arrows from %s. Cannot continue.\n", UP_IMG);
       exit(1);
     }
-      
-
-  if (mb_pixbuf_img_get_width(mb->img_scroll_up) != 16
-      || mb_pixbuf_img_get_height(mb->img_scroll_up) != 16)
-    {
-      img_tmp = mb_pixbuf_img_scale (mb->pixbuf, mb->img_scroll_up, 16, 16);
-      mb_pixbuf_img_free(mb->pixbuf, mb->img_scroll_up);
-      mb->img_scroll_up = img_tmp;
-    }
-
-  if (mb_pixbuf_img_get_width(mb->img_scroll_down) != 16
-      || mb_pixbuf_img_get_height(mb->img_scroll_down) != 16)
-    {
-      img_tmp = mb_pixbuf_img_scale (mb->pixbuf, mb->img_scroll_down, 16, 16);
-      mb_pixbuf_img_free(mb->pixbuf, mb->img_scroll_down);
-      mb->img_scroll_down = img_tmp;
-    }
-
 }
 
 void
@@ -878,7 +1031,9 @@ usage(char *name)
 	  "  --titlefont    <font>        Title font\n"
 	  "  --fontcol      <col>         Font color\n"
           "  --no-outline                 Dont outline text\n"
-	  "  --no-title                   Dont render current folder title\n"
+	  "  --no-title                   Dont render the title header\n"
+	  "  --title        <str>         Launcher title (default: the Name\n"
+	  "                               from the vfolders' Root.directory)\n"
 	  "  --bg            <background definition>, like;\n\n"
 	  "\t\timg-stretched:<filename>  (distorts to fill screen)\n"
 	  "\t\timg-tiled:<filename>      (aka img-mosaic:<filename>)\n"
@@ -961,6 +1116,16 @@ mbdesktop_init(int argc, char **argv)
     */
     if (!strcmp ("--no-title", argv[i])) {
       mb->use_title_header = False;
+      continue;
+    }
+    /* The title otherwise comes from Root.directory's Name, which lives in
+     * matchbox-common. This lets a session name the launcher without
+     * having to patch that package's data files. */
+    if (!strcmp ("--title", argv[i])) {
+      if (++i>=argc) usage (argv[0]);
+      if (mb->top_level_name) free(mb->top_level_name);
+      mb->top_level_name       = strdup(argv[i]);
+      mb->user_overide_title   = True;
       continue;
     }
 
@@ -1132,7 +1297,7 @@ mbdesktop_init(int argc, char **argv)
 
   //  mbdesktop_calculate_item_dimentions(mb);
 
-  mbdesktop_set_scroll_buttons(mb);
+  mbdesktop_set_pager_buttons(mb);
 
   /* ewmh hints */
   mb->window_type_atom =
@@ -1221,79 +1386,20 @@ mbdesktop_init(int argc, char **argv)
   return mb;
 }
 
-void 
-mbdesktop_scroll_up(MBDesktop *mb)
+/* mbdesktop_scroll_up()/mbdesktop_scroll_down() used to live here. The
+ * launcher moves a whole page at a time instead, and every page boundary
+ * is recomputed from mb->current_page in
+ * mbdesktop_calculate_item_dimentions() -- see mbdesktop_page_goto().
+ */
+
+/* A zero-width rect never matches, which is how the pager rects disable
+ * themselves on a single-page launcher. */
+static Bool
+point_in_rect (int x, int y, XRectangle *r)
 {
-  int i, items_per_row;
-
-  if (mb->scroll_offset_item->item_prev_sibling)
-    {
-      if (mbdesktop_current_folder_view ( mb ) == VIEW_LIST)
-	{
-	  mb->scroll_offset_item = mb->scroll_offset_item->item_prev_sibling;
-
-	  if (mb->kbd_focus_item->item_prev_sibling)
-	    mb->kbd_focus_item = mb->kbd_focus_item->item_prev_sibling;
-	}
-      else
-	{
-	  items_per_row = mb->workarea_width / mb->item_width;
-	  for(i = 0; i < items_per_row; i++)
-	    {
-	      mb->scroll_offset_item = mb->scroll_offset_item->item_prev_sibling;
-	      if (mb->kbd_focus_item->item_prev_sibling)
-		mb->kbd_focus_item = mb->kbd_focus_item->item_prev_sibling;
-	    }
-	}
-    }
-}
-
-void 
-mbdesktop_scroll_down(MBDesktop *mb)
-{
-  MBDesktopItem *orig = mb->scroll_offset_item;
-  int n = 0;
-
-  /* Check we dont scroll to far */
-  do { n++; } while ((orig = orig->item_next_sibling) != NULL);
-
-  if (n < (mb->current_view_columns * mb->current_view_rows))
-    return;
-
-  /* now do the actual scroll */
-
-  orig = mb->scroll_offset_item;
-
-  if (mbdesktop_current_folder_view ( mb ) == VIEW_LIST)
-    {
-      if (mb->scroll_offset_item->item_next_sibling != NULL)
-	{
-	  mb->scroll_offset_item = mb->scroll_offset_item->item_next_sibling;
-
-	  if (mb->kbd_focus_item->item_next_sibling)
-	    mb->kbd_focus_item = mb->kbd_focus_item->item_next_sibling;
-	}
-
-      
-    } else {
-      if (mb->scroll_offset_item->item_next_sibling)
-	{
-	  int i, items_per_row = mb->workarea_width / mb->item_width;
-	  for(i = 0; i < items_per_row; i++)
-	    {
-	      if (mb->scroll_offset_item->item_next_sibling == NULL)
-		{
-		  mb->scroll_offset_item = orig;
-		  return;
-		} 
-	      else
-		mb->scroll_offset_item = mb->scroll_offset_item->item_next_sibling;
-	      
-	      if (mb->kbd_focus_item->item_next_sibling)
-		mb->kbd_focus_item = mb->kbd_focus_item->item_next_sibling;
-	    }
-	}
-    }
+  return (r->width > 0 && r->height > 0
+	  && x >= r->x && x < (r->x + r->width)
+	  && y >= r->y && y < (r->y + r->height));
 }
 
 void
@@ -1394,15 +1500,13 @@ handle_button_event(MBDesktop *mb, XButtonEvent *e)
     }
   else
     {
-      if (e->y < mb->workarea_y + 20)
-	{
-	  if (e->x > (mb->workarea_x + mb->workarea_width -24))
-	    mbdesktop_scroll_up(mb);
-	  else if (e->x > (mb->workarea_x + mb->workarea_width -40))
-	    mbdesktop_scroll_down(mb);
-
-	  mbdesktop_view_paint(mb, False);
-	}
+      /* Not on an item -- the only other thing that reacts to a tap is
+       * the pager. Its rects are set while painting and are zero-sized
+       * whenever there is only one page, so this is a no-op then. */
+      if (point_in_rect(e->x, e->y, &mb->pager_prev_rect))
+	mbdesktop_page_goto(mb, mb->current_page - 1);
+      else if (point_in_rect(e->x, e->y, &mb->pager_next_rect))
+	mbdesktop_page_goto(mb, mb->current_page + 1);
     }
 }
 
@@ -1416,14 +1520,32 @@ key_is_activate(KeySym key)
   return (key == XK_Return || key == XK_KP_Enter || key == MBDESKTOP_KEY_OK);
 }
 
+/* Move `item` n places along the sibling list, stopping at whichever end
+ * it reaches first. Clamping rather than refusing to move is what makes
+ * the last, partly-filled row reachable with Down: a row step that would
+ * run off the end lands on the final item instead of doing nothing. */
+static MBDesktopItem *
+item_step (MBDesktopItem *item, int n, Bool forwards)
+{
+  int i;
+
+  for (i = 0; i < n; i++)
+    {
+      MBDesktopItem *next = forwards ? item->item_next_sibling
+	                             : item->item_prev_sibling;
+      if (next == NULL) break;
+      item = next;
+    }
+
+  return item;
+}
+
 static void
 handle_key_event(MBDesktop *mb, XKeyEvent *e)
 {
-  MBDesktopItem *active_item = NULL, *tmp_item = NULL;
+  MBDesktopItem *active_item = NULL, *prev_focus_item = NULL;
   KeySym         key;
-  int            i = 0;
-  Bool           not_scrolled = True;
-  int max_items_horiz = mb->workarea_width / mb->item_width;
+  int            active_page;
 
   /* No items - no keys */
   if (mb->current_head_item == mb->top_head_item)
@@ -1493,13 +1615,15 @@ handle_key_event(MBDesktop *mb, XKeyEvent *e)
 	      active_item = mb->kbd_focus_item->item_prev_sibling;
 	    } else return;
 	} else {
-	  active_item = mb->kbd_focus_item;
-	  while (i++ < max_items_horiz)
-	    if ((active_item = active_item->item_prev_sibling) == NULL)
-	      return;
+	  /* A row back. On the top row of a page that lands on the bottom
+	   * row of the previous one, because the list is one flat sequence
+	   * and only its display is split into pages. */
+	  active_item = item_step(mb->kbd_focus_item,
+				  mb->current_view_columns, False);
+	  if (active_item == mb->kbd_focus_item) return;
 	}
       break;
-    case XK_Down:	    
+    case XK_Down:
       if (mbdesktop_current_folder_view ( mb ) == VIEW_LIST)
 	{
 	  if (mb->kbd_focus_item->item_next_sibling)
@@ -1508,10 +1632,9 @@ handle_key_event(MBDesktop *mb, XKeyEvent *e)
 	    } 
 	  else return;
 	} else {
-	  active_item = mb->kbd_focus_item;
-	  while (i++ < max_items_horiz)
-	    if ((active_item = active_item->item_next_sibling) == NULL)
-	      return;
+	  active_item = item_step(mb->kbd_focus_item,
+				  mb->current_view_columns, True);
+	  if (active_item == mb->kbd_focus_item) return;
 	}
       break;
     case XK_Return:
@@ -1534,27 +1657,17 @@ handle_key_event(MBDesktop *mb, XKeyEvent *e)
 					     (void *)mbdesktop_item_get_first_sibling(mb->kbd_focus_item));
 	return;
     case XK_Prior:
-      if (mb->scroll_offset_item) /* Broken */
-	{
-	  mb->last_visible_item = mb->scroll_offset_item;
-	  mbdesktop_scroll_up(mb);
-	}
-	  break;
+      mbdesktop_page_goto(mb, mb->current_page - 1);
+      return;
     case XK_Next:
-      if (mb->last_visible_item)
-	{
-	  active_item = mb->scroll_offset_item = mb->last_visible_item;
-	  mbdesktop_scroll_down(mb);
-	}
-      break;
+      mbdesktop_page_goto(mb, mb->current_page + 1);
+      return;
     case XK_Home:
-      mb->kbd_focus_item = mb->current_head_item 
-	= mb->scroll_offset_item = mb->top_head_item->item_child;
-      mbdesktop_view_paint(mb, False);
+      active_item = mb->current_head_item;
       break;
 
     case XK_End:
-      /* XXX TODO */
+      active_item = mbdesktop_item_get_last_sibling(mb->current_head_item);
       break;
 
 
@@ -1565,76 +1678,27 @@ handle_key_event(MBDesktop *mb, XKeyEvent *e)
 	}
       break;
     }
- 
+
   if (active_item)
     {
-      if ( key == XK_Down || key == XK_Right)
+      prev_focus_item = mb->kbd_focus_item;
+      active_page     = mbdesktop_page_of_item(mb, active_item);
+
+      mb->kbd_focus_item = active_item;
+
+      /* Moving off the displayed page turns it; the whole view has to be
+       * repainted then, so there is no old highlight left to rub out. */
+      if (active_page >= 0 && active_page != mb->current_page)
 	{
-	  /* do we need to scroll ? */
-	  if (mb->last_visible_item)
-	    {
-
-	      /* Handle 'special' case of keyboard scroll to end of list */
-
-	      if (active_item->item_next_sibling == NULL
-		  && mbdesktop_current_folder_view ( mb ) == VIEW_LIST)
-		{
-		  /* clear existing highlight */
-		  mbdesktop_view_item_highlight (mb, mb->kbd_focus_item, 
-						 HIGHLIGHT_OUTLINE_CLEAR); 
-
-		  mb->scroll_offset_item 
-		    = mb->scroll_offset_item->item_next_sibling;
-		  
-		  mb->kbd_focus_item = active_item;
-
-		  mbdesktop_view_paint(mb, False);
-
-		  return;
-		}
-	      else
-		{
-		  tmp_item = active_item;
-		  while ((tmp_item = tmp_item->item_prev_sibling) != NULL)
-		    if (tmp_item == mb->last_visible_item->item_prev_sibling )
-		      {
-			not_scrolled = False;
-			mbdesktop_scroll_down(mb);
-			break;
-		      }
-		}
-	    }
-	}
-      else
-	{
-	  /* do we need to scroll ? */
-	  if (mb->scroll_offset_item)
-	    {
-	      tmp_item = active_item;
-	      while ((tmp_item = tmp_item->item_next_sibling) != NULL)
-		if (tmp_item == mb->scroll_offset_item)
-		  {
-		    not_scrolled = False;
-		    mbdesktop_scroll_up(mb);
-		    break;
-		  }
-	    }
-	}
-      
-      /* Clear the old dashed border */
-      if (not_scrolled && mb->had_kbd_input)
-	{
-	  mbdesktop_view_item_highlight (mb, mb->kbd_focus_item, 
-					 HIGHLIGHT_OUTLINE_CLEAR); 
-	  mb->kbd_focus_item = active_item;
-	  mbdesktop_view_paint(mb, True);
-
-	}
-      else
-	{
-	  mb->kbd_focus_item = active_item;
+	  mb->current_page = active_page;
 	  mbdesktop_view_paint(mb, False);
-
+	}
+      else
+	{
+	  if (mb->had_kbd_input)
+	    mbdesktop_view_item_highlight (mb, prev_focus_item,
+					   HIGHLIGHT_OUTLINE_CLEAR);
+	  mbdesktop_view_paint(mb, True);
 	}
     }
 }

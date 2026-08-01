@@ -20,8 +20,9 @@
 static void
 item_activate_cb(void *data1, void *data2);
 
-static char* RootMatchStr = NULL;
-static int ItemTypeDotDesktop = 0;
+/* RootMatchStr / ItemTypeDotDesktop used to exist here to drive the
+ * category-to-folder matching. The launcher is flat, so there is nothing
+ * left to match against -- see dotdesktop_init(). */
 
 #ifdef USE_LIBSN
 
@@ -35,89 +36,68 @@ static SnDisplay *SnDpy;
 
 #endif 
 
-static MBDesktopItem *
-get_folder_from_name ( MBDesktop *mb, char *name )
+/* Insert into the flat top-level list, alphabetically.
+ *
+ * The desktop used to bucket applications into one vfolder per category
+ * and sort within each bucket. Everything now lives in one list -- see
+ * dotdesktop_init() for why -- so the sort is over the whole set and the
+ * "Back" item that used to head every folder's children is gone. That
+ * matters here because the old insertion loop leaned on it: it could
+ * assume a first child already existed and only ever insert *after* it.
+ * A flat list has no such sentinel, so both the empty-list and the
+ * new-first-item cases have to be handled explicitly.
+ */
+static void
+insert_sorted_at_top_level (MBDesktop *mb, MBDesktopItem *item_new)
 {
-  MBDesktopItem *item, *item_top;
+  MBDesktopItem *top = mbdesktop_get_top_level_folder(mb);
+  MBDesktopItem *item;
 
-  item_top = mbdesktop_get_top_level_folder(mb);
-
-  if (!strcasecmp(name, "root"))
-    return item_top; 
-
-  mbdesktop_items_enumerate_siblings(mbdesktop_item_get_child(item_top), item)
+  if (top->item_child == NULL)
     {
-      if (!strcmp(name, mbdesktop_item_get_name (mb, item)))
-	return item;
-    }
-  
-  return NULL;
-}
-
-static MBDesktopItem *
-match_folder ( MBDesktop *mb, char *category )
-{
-  MBDesktopItem *item, *item_fallback = NULL, *item_top;
-  char          *match_str;  
-
-  /* We dont want 'action' entrys */
-  if (category && strstr(category, "Action")) 
-    return NULL;
-
-  item_top = mbdesktop_get_top_level_folder(mb);
-
-  /* Add to root window */
-  if (RootMatchStr)
-    {
-      if (!strcmp("fallback", RootMatchStr))
-	{
-	  item_fallback = item_top;
-	}
-      else if (category && strstr(category, RootMatchStr))
-	{
-	  return item_top;
-	}
+      mbdesktop_items_append_to_top_level(mb, item_new);
+      return;
     }
 
-  /* Each root child folder */
-  mbdesktop_items_enumerate_siblings(mbdesktop_item_get_child(item_top), item)
+  for (item = top->item_child; item != NULL; item = item->item_next_sibling)
+    if (strcasecmp(item->name, item_new->name) > 0)
+      break;
+
+  if (item == NULL)		/* sorts after everything present */
     {
-      if (mbdesktop_item_get_type (mb, item) == ItemTypeDotDesktop)
-	{
-	  match_str = (char *)mbdesktop_item_get_user_data(mb, item);
-	  if (match_str != NULL)
-	    {
-	      if (item_fallback == NULL && !strcmp("fallback", match_str))
-		{
-		  item_fallback = item;
-		  continue;
-		}
-	      if (category && strstr(category, match_str))
-		{
-		  return item;
-		}
-	    }
-	}
+      mbdesktop_items_append_to_top_level(mb, item_new);
+      return;
     }
-  return item_fallback; 
+
+  item_new->item_parent = top;
+
+  if (item->item_prev_sibling == NULL)
+    {
+      /* New head of the list. mbdesktop_items_prepend() would do this,
+       * but it takes the head by reference and leaves item_parent alone,
+       * and the head is what mbdesktop_item_get_parent() reads. */
+      item_new->item_next_sibling = item;
+      item->item_prev_sibling     = item_new;
+      top->item_child             = item_new;
+      return;
+    }
+
+  mbdesktop_items_insert_after (mb, item->item_prev_sibling, item_new);
 }
 
 static void
-add_a_dotdesktop_item (MBDesktop     *mb, 
-		       MBDotDesktop  *dd,
-		       MBDesktopItem *folder)
+add_a_dotdesktop_item (MBDesktop     *mb,
+		       MBDotDesktop  *dd)
 {
-  MBDesktopItem  *item_new = NULL, *item_before, *found_folder_item = NULL;
-  Bool            have_attached = False;
+  MBDesktopItem  *item_new = NULL;
   char           *exec_str = NULL;
+  char           *category = NULL;
   unsigned char  *heavy = NULL;   /* mb_dotdesktop_get returns unsigned char * */
 
-  if (folder)
-    found_folder_item = folder;
-  else
-    found_folder_item = match_folder( mb, mb_dotdesktop_get(dd, "Categories"));
-
-  if ( found_folder_item == NULL) return;
+  /* We dont want 'action' entrys */
+  category = mb_dotdesktop_get(dd, "Categories");
+  if (category && strstr(category, "Action"))
+    return;
 
   exec_str = mb_dotdesktop_get_exec(dd);
 
@@ -189,46 +169,10 @@ add_a_dotdesktop_item (MBDesktop     *mb,
 					  item_activate_sn_cb); 
   else
 #endif
-    mbdesktop_item_set_activate_callback (mb, item_new, 
-					  item_activate_cb); 
+    mbdesktop_item_set_activate_callback (mb, item_new,
+					  item_activate_cb);
 
-  item_before = mbdesktop_item_get_child(found_folder_item);
-
-  do
-    {
-      MBDesktopItem *item_next = NULL;
-      if ((item_next = mbdesktop_item_get_next_sibling(item_before)) != NULL)
-	{
-	  if (item_next->type == ITEM_TYPE_FOLDER
-	      || item_next->type == ITEM_TYPE_PREVIOUS)
-	    continue;
-	  
-	  if ( (strcasecmp(item_before->name, item_new->name) < 0
-		|| item_before->type == ITEM_TYPE_FOLDER
-		|| item_before->type == ITEM_TYPE_PREVIOUS )
-	      && strcasecmp(item_next->name, item_new->name) > 0)
-	    {
-	      /*
-	      printf("addind '%s' after '%s' before '%s'\n",
-		     item_new->name,
-		     item_before->name,
-		     item_next->name);
-	      */
-	      have_attached = True;
-	      mbdesktop_items_insert_after (mb, item_before, item_new);
-	      break;
-	    }
-	}
-    }
-  while ((item_before = mbdesktop_item_get_next_sibling(item_before)) != NULL);
-
-  if (!have_attached)
-    {
-      /* printf("appending '%s' \n", item_new->name); */
-      
-      mbdesktop_items_append_to_folder( mb, found_folder_item, item_new);
-    }
-
+  insert_sorted_at_top_level (mb, item_new);
 }
 
 
@@ -254,17 +198,13 @@ dotdesktop_init (MBDesktop             *mb,
   struct stat    stat_info;
 
   char vfolder_path_root[512];
-  char vfolder_path[512];
   char orig_wd[256];
 
   int   desktops_dirs_n  = APP_PATHS_N;
 
   int   i = 0;
 
-  MBDotDesktopFolders     *ddfolders;
-  MBDotDesktopFolderEntry *ddentry;
-  MBDesktopItem           *item_new = NULL;
-  MBDotDesktop            *dd, *user_overides = NULL;
+  MBDotDesktop            *dd;
 
   char                     app_paths[APP_PATHS_N][256];
   struct dirent          **namelist;
@@ -273,70 +213,49 @@ dotdesktop_init (MBDesktop             *mb,
   SnDpy = sn_display_new (mb->dpy, NULL, NULL);
 #endif
 
-  ItemTypeDotDesktop = mbdesktop_module_get_register_type ( mb );
-  
-  snprintf( vfolder_path_root, 512, "%s/.matchbox/vfolders/Root.directory", 
+  /* Root.directory is still read -- for the launcher's title, and for
+   * nothing else now.
+   *
+   * The rest of the vfolders are deliberately ignored. This module used to
+   * turn each one into an on-screen folder and file every application into
+   * whichever folder's Match= matched its Categories= line, which meant
+   * finding an application required knowing (or guessing) which category
+   * somebody had filed it under, and then opening folders one at a time
+   * until it turned up. On a device with a couple of dozen applications
+   * that is strictly more work than showing all of them.
+   *
+   * Categories are not gone from the system, only from the desktop:
+   * mb-applet-menu-launcher in matchbox-panel reads exactly the same
+   * vfolder .directory files, independently of this module, and still
+   * presents its menu as a category tree. Browsing by category lives
+   * there; the desktop is now a flat, paginated launcher.
+   */
+  snprintf( vfolder_path_root, 512, "%s/.matchbox/vfolders/Root.directory",
 	    mb_util_get_homedir());
-  snprintf( vfolder_path, 512, "%s/.matchbox/vfolders", 
-	    mb_util_get_homedir());
-
 
   if (stat(vfolder_path_root, &stat_info))
-    {
-      snprintf(vfolder_path_root, 512, PKGDATADIR "/vfolders/Root.directory");
-      snprintf(vfolder_path, 512, PKGDATADIR "/vfolders" );
-    }
+    snprintf(vfolder_path_root, 512, PKGDATADIR "/vfolders/Root.directory");
 
   dd = mb_dotdesktop_new_from_file(vfolder_path_root);
 
   if (!dd) 			/* XXX improve */
-    { 
-      fprintf( stderr, "mb-desktop-dotdesktop: cant open %s\n", vfolder_path ); 
-      return -1; 
-    }
-
-  RootMatchStr = mb_dotdesktop_get(dd, "Match");
-
-  /* XXX Below is potentially evil 
-     - need to figure out a safe way so only one module can
-       access the 'root props' at once. 
-  */
-  mbdesktop_item_set_name (mb, mb->top_head_item, 
-			   mb_dotdesktop_get(dd, "Name"));  
-
-  /* Now grab the vfolders */
-  ddfolders = mb_dot_desktop_folders_new(vfolder_path);
-
-  mb_dot_desktop_folders_enumerate(ddfolders, ddentry)
     {
-      item_new
-	= mbdesktop_module_folder_create ( mb,
-					   mb_dot_desktop_folder_entry_get_name(ddentry),
-					   mb_dot_desktop_folder_entry_get_icon(ddentry));
-
-      mbdesktop_item_set_user_data (mb, item_new, 
-				    (void *)mb_dot_desktop_folder_entry_get_match(ddentry));
-
-      mbdesktop_item_set_type (mb, item_new, ItemTypeDotDesktop);
-
-      mbdesktop_items_append_to_top_level (mb, item_new);
+      fprintf( stderr, "mb-desktop-dotdesktop: cant open %s\n",
+	       vfolder_path_root );
+      return -1;
     }
 
-  /* Now see if theres a user file overiding any folder mappings */
+  /* --title on the command line wins, so a session can name the launcher
+   * without patching matchbox-common's data files. */
+  if (!mb->user_overide_title)
+    mbdesktop_item_set_name (mb, mb->top_head_item,
+			     mb_dotdesktop_get(dd, "Name"));
 
+  mb_dotdesktop_free(dd);
 
-  /* hmm, just reuse vfolder_path var :/ */
-  snprintf(vfolder_path, 512, "%s/.matchbox/desktop/dd-folder-overides",
-	   mb_util_get_homedir());
-  
-  /* 
-   *  Format of the .desktop file is ;
-   *           path/to/dot/desktop/file=category 
-   *
-   */
-  user_overides = mb_dotdesktop_new_from_file(vfolder_path);
-
-  printf("user_overides is %p\n", user_overides);
+  /* The $HOME/.matchbox/desktop/dd-folder-overides file, which pinned an
+   * individual .desktop file into a named folder, is not read any more:
+   * there are no folders left for it to name. */
 
   /* Now grep all the .desktop files */
 
@@ -423,25 +342,7 @@ dotdesktop_init (MBDesktop             *mb,
 		      && !strcmp(mb_dotdesktop_get(dd, "Type"), "Application")
 		      && mb_dotdesktop_get(dd, "Name")
 		      && mb_dotdesktop_get(dd, "Exec"))
-		    {
-		      MBDesktopItem *folder = NULL;
-		      char           full_path[512];
-		      char          *folder_name = NULL;
-
-		      if (user_overides)
-			{
-			  snprintf(full_path, 512, "%s/%s", 
-				   app_paths[i], namelist[j]->d_name);
-			  if ((folder_name = mb_dotdesktop_get(user_overides, 
-							       full_path)) 
-			      != NULL )
-			    {
-			      folder = get_folder_from_name(mb, folder_name);
-			    }
-			}
-
-		      add_a_dotdesktop_item (mb, dd, folder);
-		    }
+		    add_a_dotdesktop_item (mb, dd);
 		  mb_dotdesktop_free(dd);
 		}
 	    }
@@ -455,8 +356,6 @@ dotdesktop_init (MBDesktop             *mb,
       free(namelist);
     }
   chdir(orig_wd);
-
-  if (user_overides) mb_dotdesktop_free(user_overides);
 
   return 1;
 }
