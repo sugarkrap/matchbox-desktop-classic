@@ -396,8 +396,8 @@ item_activate_sn_cb(void *data1, void *data2)
       _exit (1);
       break;
     }
-  mb_util_animate_startup(mb->dpy, item->x, item->y, 
-			  item->width, item->height); 
+  /* No animate_startup: it XGrabServer()s across 20 round trips. See the
+   * long note in item_activate_cb() below. */
 
 }
 #endif
@@ -417,8 +417,7 @@ item_activate_si_cb(void *data1, void *data2)
 
   if (win_found != None)
     {
-      mb_util_animate_startup(mb->dpy, item->x, item->y, 
-			      item->width, item->height); 
+      /* No animate_startup: see the note in item_activate_cb() below. */
       mb_util_window_activate(mb->dpy, win_found);
     }
   else item_activate_sn_cb((void *)mb, (void *)item);
@@ -437,13 +436,39 @@ item_activate_cb(void *data1, void *data2)
     case 0:
       mb_exec((char *)item->data);
       fprintf(stderr, "exec failed, cleaning up child\n");
-      exit(1);
+      _exit(1);
     case -1:
       fprintf(stderr, "can't fork\n");
       break;
     }
 
-  mb_util_animate_startup(mb->dpy, item->x, item->y, item->width, item->height); 
+  /*
+   * No mb_util_animate_startup() here, and that is a bug fix rather than a
+   * change of taste.
+   *
+   * It draws the expanding zoom rectangle, and the way it does it is to
+   * XGrabServer() and then run 21 XOR XDrawRectangle()s on the ROOT window
+   * (subwindow_mode IncludeInferiors, growing to full screen) with 20
+   * XSync(dpy, True) round trips in between, before it ungrabs. libmb's own
+   * comment on the function opens "Not sure on the evilness of this yet".
+   *
+   * A server grab means no other client is serviced at all, so for the whole
+   * of that the panel cannot repaint, the window manager cannot answer the
+   * MapRequest of the application we just forked, and queued input lands only
+   * once it is over. That was survivable when a round trip was nearly free.
+   *
+   * It stopped being nearly free when Xfbdev gained double-buffered page
+   * flipping: every one of those XSync()s now drives a block-handler flush
+   * that waits on FBIO_WAITFORVSYNC, measured at up to 153 ms per round trip
+   * on this panel. Twenty of them, grabbed, is a session-wide lockout of a
+   * second or more -- and it is exactly why launching from a desktop icon
+   * hung while the same application from matchbox-panel's launcher did not:
+   * mb-applet-menu-launcher's fork_exec() just forks and execs, with no
+   * animation and no grab.
+   *
+   * The underlying flip pacing is worth fixing on its own, but nothing should
+   * be grabbing the server on an application launch path to begin with.
+   */
 
 }
 
