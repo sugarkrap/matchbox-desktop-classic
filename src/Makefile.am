@@ -5,7 +5,7 @@ MBCONFDIR  = $(sysconfdir)/matchbox
 
 INCLUDES = $(GCC_WARNINGS) -DDATADIR=\"$(DATADIR)\" -DPKGDATADIR=\"$(PKGDATADIR)\" -DPREFIX=\"$(PREFIXDIR)\" -DMBCONFDIR=\"$(MBCONFDIR)\" $(LIBMB_CFLAGS) 
 
-bin_PROGRAMS = matchbox-desktop mb-wallpaper-picker
+bin_PROGRAMS = matchbox-desktop
 
 matchbox_desktop_LDADD = $(LIBMB_LIBS)  $(LIBADD_DL) -lz
 matchbox_desktop_LDFLAGS = -export-dynamic
@@ -16,12 +16,6 @@ matchbox_desktop_SOURCES = \
  mbdesktop_win_plugin.c mbdesktop_win_plugin.h \
  mbdesktop_bg_cache.c mbdesktop_bg_cache.h \
  mbdesktop_watch.c mbdesktop_watch.h
-
-mb_wallpaper_picker_LDADD = $(LIBMB_LIBS)
-
-mb_wallpaper_picker_SOURCES = \
- mb-wallpaper-picker.c
-
 
 mbdesktopheadersdir = $(includedir)/matchbox-desktop
 mbdesktopheaders_DATA = \
