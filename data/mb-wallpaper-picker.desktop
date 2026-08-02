@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Set Wallpaper
-Comment=Pick a wallpaper and how it is displayed
-Exec=mb-wallpaper-picker
-Type=Application
-Icon=mbdesktop.png
-Categories=Settings
