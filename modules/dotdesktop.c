@@ -93,10 +93,38 @@ add_a_dotdesktop_item (MBDesktop     *mb,
   char           *exec_str = NULL;
   char           *category = NULL;
   unsigned char  *heavy = NULL;   /* mb_dotdesktop_get returns unsigned char * */
+  unsigned char  *nodesktop = NULL;
 
   /* We dont want 'action' entrys */
   category = mb_dotdesktop_get(dd, "Categories");
   if (category && strstr(category, "Action"))
+    return;
+
+  /*
+   * X-Piko-NoDesktop: reachable from a menu, but not an icon out here.
+   *
+   * The desktop is a flat launcher (see dotdesktop_init()) -- every
+   * application it knows about is one icon on one list, with no folders to
+   * put anything behind. That is the right shape for applications and the
+   * wrong one for *settings*: piko-settings groups those into its own
+   * categorised window, so listing each of them out here as well would
+   * push the actual applications down the list to no benefit.
+   *
+   * This key removes an entry from THIS view only, and deliberately not
+   * from anywhere else -- mb-applet-menu-launcher in matchbox-panel scans
+   * the same files and never reads it, so a settings entry stays browsable
+   * under its Categories= folder in the panel menu exactly as before.
+   *
+   * NoDisplay= is the freedesktop key that sounds like this and is not:
+   * it means "hide from menus", which would take the panel menu away too.
+   * The spec has nothing for "hide from the desktop, keep in the menu" --
+   * an icon view is not a concept it has -- and reserves X- for exactly
+   * this, so other implementations are required to ignore it. Same shape
+   * as X-Piko-Heavy below.
+   */
+  nodesktop = mb_dotdesktop_get(dd, "X-Piko-NoDesktop");
+  if (nodesktop && (!strcasecmp((char *)nodesktop, "true")
+		    || !strcmp((char *)nodesktop, "1")))
     return;
 
   exec_str = mb_dotdesktop_get_exec(dd);
