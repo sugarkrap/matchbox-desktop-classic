@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: matchbox-desktop
+Description: Matchbox Desktop module dependencies.
+Version: 0.9.1
+Libs: -L${libdir} -L/mnt/data/Code/piko/userspace/stage-target/usr/lib -lmb -lXext -lpng16 -lXft -lX11
+Cflags: -I${includedir}/matchbox-desktop -I/mnt/data/Code/piko/userspace/stage-target/usr/include -I/mnt/data/Code/piko/userspace/stage-target/usr/include/libpng16 -I/mnt/data/Code/piko/userspace/stage-target/usr/include/freetype2

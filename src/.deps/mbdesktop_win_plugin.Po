@@ -1,0 +1,283 @@
+mbdesktop_win_plugin.o: mbdesktop_win_plugin.c mbdesktop.h ../config.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/stdio.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/features.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/stddef.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/types.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/wordsize.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/typesizes.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_stdio.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/wchar.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/wchar.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/pthreadtypes.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/endian.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/endian.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/byteswap.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-common.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-16.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/stdarg.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/stdio_lim.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/stdlib.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/waitflags.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/waitstatus.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/types.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/time.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/select.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/select.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigset.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/time.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/sysmacros.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/alloca.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/string.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/unistd.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix_opt.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_posix_opt.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/environments.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/confname.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/getopt.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/fcntl.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uio.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl-linux.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/stat.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/stat.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/signal.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/signum.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/siginfo.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigaction.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigcontext.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm/sigcontext.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigstack.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/ucontext.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/procfs.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/time.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/user.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigthread.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/dirent.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/dirent.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix1_lim.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/local_lim.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/linux/limits.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_local_lim.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/ctype.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xlib.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/X.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xfuncproto.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xosdefs.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xutil.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysym.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysymdef.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xatom.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xmd.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zlib.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zconf.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/limits.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/syslimits.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/limits.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix2_lim.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/xopen_lim.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mb.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbconfig.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbpixbuf.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/png.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pnglibconf.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pngconf.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/setjmp.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/setjmp.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/jmp_buf_tag.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/ipc.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/ipc.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/shm.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/shm.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/XShm.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shm.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbexp.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbdotdesktop.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/locale.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_locale.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbutil.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/errno.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm/errno.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/wait.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/Xft.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/ft2build.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftheader.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/freetype.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftconfig.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftoption.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftstdlib.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/integer-types.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/public-macros.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/mac-support.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fttypes.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftsystem.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftimage.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrors.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftmoderr.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrdef.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/fontconfig/fontconfig.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/Xrender.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/render.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xdefs.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/XftCompat.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/langinfo.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/nl_types.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbtray.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbmenu.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xresource.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shape.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shapeconst.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-common.h \
+ /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h \
+ mbdesktop_win_plugin.h
+mbdesktop.h:
+../config.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/stdio.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/features.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/stddef.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/types.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/wordsize.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/typesizes.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_stdio.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/wchar.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/wchar.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/pthreadtypes.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/endian.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/endian.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/byteswap.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-common.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-16.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/stdarg.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/stdio_lim.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/stdlib.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/waitflags.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/waitstatus.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/types.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/time.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/select.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/select.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigset.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/time.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/sysmacros.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/alloca.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/string.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/unistd.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix_opt.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_posix_opt.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/environments.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/confname.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/getopt.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/fcntl.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uio.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl-linux.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/stat.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/stat.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/signal.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/signum.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/siginfo.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigaction.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigcontext.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm/sigcontext.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigstack.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/ucontext.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/procfs.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/time.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/user.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/sigthread.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/dirent.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/dirent.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix1_lim.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/local_lim.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/linux/limits.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_local_lim.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/ctype.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xlib.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/X.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xfuncproto.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xosdefs.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xutil.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysym.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysymdef.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xatom.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xmd.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zlib.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zconf.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/limits.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/syslimits.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/limits.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix2_lim.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/xopen_lim.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mb.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbconfig.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbpixbuf.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/png.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pnglibconf.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pngconf.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/setjmp.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/setjmp.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/jmp_buf_tag.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/ipc.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/ipc.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/shm.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/shm.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/XShm.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shm.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbexp.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbdotdesktop.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/locale.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_locale.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbutil.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/errno.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm/errno.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/wait.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/Xft.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/ft2build.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftheader.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/freetype.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftconfig.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftoption.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftstdlib.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/integer-types.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/public-macros.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/mac-support.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fttypes.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftsystem.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftimage.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrors.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftmoderr.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrdef.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/fontconfig/fontconfig.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/Xrender.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/render.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xdefs.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/XftCompat.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/langinfo.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/nl_types.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbtray.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbmenu.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xresource.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shape.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shapeconst.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-common.h:
+/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h:
+mbdesktop_win_plugin.h:

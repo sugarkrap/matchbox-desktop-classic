@@ -1,0 +1,12 @@
+md5.o: md5.c md5.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/string.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/features.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h \
+ /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/stddef.h
+md5.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/string.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/features.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h:
+/mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/stddef.h:
