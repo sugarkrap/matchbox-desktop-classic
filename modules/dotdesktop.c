@@ -89,10 +89,11 @@ add_a_dotdesktop_item (MBDesktop     *mb,
   heavy = mb_dotdesktop_get(dd, "X-Piko-Heavy");
   {
     char *video_key = (char *)mb_dotdesktop_get(dd, "X-Piko-Video");
+    char *parts_key = (char *)mb_dotdesktop_get(dd, "X-Piko-Parts");
     int   is_heavy  = heavy && (!strcasecmp((char *)heavy, "true")
 				|| !strcmp((char *)heavy, "1"));
 
-    if (is_heavy || video_key)
+    if (is_heavy || video_key || parts_key)
     {
       char *nm      = (char *)mb_dotdesktop_get(dd, "Name");
       char *reason  = (char *)mb_dotdesktop_get(dd, "X-Piko-Heavy-Reason");
@@ -101,6 +102,7 @@ add_a_dotdesktop_item (MBDesktop     *mb,
       char  reason_opt[512]  = "";
       char  drivers_opt[128] = "";
       char  video_opt[64]    = "";
+      char  parts_opt[256]   = "";
       char *wrapped;
       int   len;
 
@@ -112,16 +114,18 @@ add_a_dotdesktop_item (MBDesktop     *mb,
 	snprintf(drivers_opt, sizeof(drivers_opt), "--drivers='%s' ", drivers);
       if (video)
 	snprintf(video_opt, sizeof(video_opt), "--video='%s' ", video);
+      if (parts_key)
+	snprintf(parts_opt, sizeof(parts_opt), "--parts='%s' ", parts_key);
 
       len = strlen(exec_str) + strlen(nm) + strlen(reason_opt)
-            + strlen(drivers_opt) + strlen(video_opt) + 64;
+            + strlen(drivers_opt) + strlen(video_opt) + strlen(parts_opt) + 64;
 
       wrapped = malloc(len);
       if (wrapped)
 	{
-	  snprintf(wrapped, len, "matchbox-apprun -n '%s' %s%s%s%s-- %s",
+	  snprintf(wrapped, len, "matchbox-apprun -n '%s' %s%s%s%s%s-- %s",
 		   nm, is_heavy ? "" : "-y ", reason_opt, drivers_opt,
-		   video_opt, exec_str);
+		   video_opt, parts_opt, exec_str);
 	  free(exec_str);
 	  exec_str = wrapped;
 	}
