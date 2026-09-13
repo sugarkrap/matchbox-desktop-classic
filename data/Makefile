@@ -162,7 +162,7 @@ AWK = gawk
 CC = arm-unknown-linux-uclibcgnueabi-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -O2 -mcpu=xscale
-CPPFLAGS = -I/mnt/data/Code/piko/userspace/stage-target/usr/include
+CPPFLAGS = -I/mnt/data/Code/piko/build/target/usr/include
 CSCOPE = cscope
 CTAGS = ctags
 CYGPATH_W = echo
@@ -187,9 +187,9 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/bin/ld
-LDFLAGS = -L/mnt/data/Code/piko/userspace/stage-target/usr/lib -Wl,-rpath-link=/mnt/data/Code/piko/userspace/stage-target/usr/lib
-LIBMB_CFLAGS = -I/mnt/data/Code/piko/userspace/stage-target/usr/include -I/mnt/data/Code/piko/userspace/stage-target/usr/include/libpng16 -I/mnt/data/Code/piko/userspace/stage-target/usr/include/freetype2
-LIBMB_LIBS = -L/mnt/data/Code/piko/userspace/stage-target/usr/lib -lmb -lXext -lpng16 -lXft -lX11
+LDFLAGS = -L/mnt/data/Code/piko/build/target/usr/lib -Wl,-rpath-link=/mnt/data/Code/piko/build/target/usr/lib
+LIBMB_CFLAGS = -I/mnt/data/Code/piko/build/target/usr/include -I/mnt/data/Code/piko/build/target/usr/include/libpng16 -I/mnt/data/Code/piko/build/target/usr/include/freetype2
+LIBMB_LIBS = -L/mnt/data/Code/piko/build/target/usr/lib -lmb -lXext -lpng16 -lXft -lX11
 LIBOBJS =  ${LIBOBJDIR}lstat$U.o ${LIBOBJDIR}stat$U.o
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -217,7 +217,7 @@ PACKAGE_URL =
 PACKAGE_VERSION = 0.9.1
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
-PKG_CONFIG_LIBDIR = /mnt/data/Code/piko/userspace/stage-target/usr/lib/pkgconfig:/mnt/data/Code/piko/userspace/stage-target/usr/share/pkgconfig:/usr/share/pkgconfig
+PKG_CONFIG_LIBDIR = /mnt/data/Code/piko/build/target/usr/lib/pkgconfig:/mnt/data/Code/piko/build/target/usr/share/pkgconfig:/usr/share/pkgconfig
 PKG_CONFIG_PATH = 
 RANLIB = arm-unknown-linux-uclibcgnueabi-ranlib
 SED = /usr/bin/sed

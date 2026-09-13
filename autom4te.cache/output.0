@@ -6187,8 +6187,8 @@ esac
 
 
 
-macro_version='2.6.1'
-macro_revision='2.6.1'
+macro_version='2.6.2'
+macro_revision='2.6.2'
 
     
     
@@ -15991,9 +15991,6 @@ printf '%s\n' "yes" >&6; }
 printf '%s\n' "no" >&6; }
 		PKG_CONFIG=""
 	fi
-fi
-if test -z "$PKG_CONFIG"; then
-	as_fn_error $? "pkg-config not found" "$LINENO" 5
 fi
 
 pkg_failed=no

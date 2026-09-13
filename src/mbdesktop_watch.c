@@ -243,10 +243,11 @@ mbdesktop_watch_wait (Display *dpy)
    *
    * QueuedAlready only inspects the queue Xlib has already built. It
    * performs no I/O, so an idle desktop stays idle -- which on a
-   * battery-powered 400MHz machine is the whole point. XNextEvent()
-   * below still flushes before it blocks, so nothing goes unsent. */
+   * battery-powered 400MHz machine is the whole point. */
   if (XEventsQueued (dpy, QueuedAlready) > 0)
     return False;
+
+  XFlush (dpy);
 
   xfd = ConnectionNumber (dpy);
 

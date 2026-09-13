@@ -73,8 +73,137 @@ static volatile Bool WantReload = False;
 void  
 modules_unload (MBDesktop *mb)
 {
-  /* XXX we probably need to free some stuff here ! */
+  MBDesktopModuleslist *module_current     = mb->modules;
+  void                 *previous_dl_handle = NULL;
+
+  while (module_current != NULL)
+    {
+      MBDesktopModuleslist *module_next = module_current->next;
+
+      if (module_current->dl_handle != previous_dl_handle)
+	{
+	  previous_dl_handle = module_current->dl_handle;
+	  dlclose(module_current->dl_handle);
+	}
+
+      free(module_current);
+      module_current = module_next;
+    }
+
   mb->modules = NULL;
+}
+
+#define FOLDER_RESTORE_DEPTH_MAXIMUM 8
+
+static int
+remember_open_folder (MBDesktop *mb, char **folder_names)
+{
+  MBDesktopItem *folder = mb->current_folder_item;
+  int            depth  = 0;
+  int            i;
+
+  while (folder != NULL && folder != mb->top_head_item
+	 && depth < FOLDER_RESTORE_DEPTH_MAXIMUM)
+    {
+      folder_names[depth] = strdup(folder->name != NULL ? folder->name : "");
+      depth++;
+      folder = folder->item_parent;
+    }
+
+  if (folder != mb->top_head_item)
+    {
+      for (i = 0; i < depth; i++)
+	{
+	  free(folder_names[i]);
+	}
+      depth = 0;
+    }
+
+  for (i = 0; i < depth / 2; i++)
+    {
+      char *swap                  = folder_names[i];
+      folder_names[i]             = folder_names[depth - 1 - i];
+      folder_names[depth - 1 - i] = swap;
+    }
+
+  return depth;
+}
+
+static MBDesktopItem *
+find_child_named (MBDesktopItem *parent, const char *name, Bool folders_only)
+{
+  MBDesktopItem *item;
+  MBDesktopItem *found = NULL;
+
+  for (item = parent->item_child;
+       item != NULL && found == NULL;
+       item = item->item_next_sibling)
+    {
+      if (item->name != NULL && !strcmp(item->name, name)
+	  && (!folders_only || item->type == ITEM_TYPE_FOLDER))
+	{
+	  found = item;
+	}
+    }
+
+  return found;
+}
+
+static void
+restore_open_folder (MBDesktop *mb,
+		     char     **folder_names,
+		     int        depth,
+		     char      *focus_name)
+{
+  MBDesktopItem *folder     = mb->top_head_item;
+  MBDesktopItem *focus      = NULL;
+  Bool           descending = True;
+  int            level;
+
+  for (level = 0; level < depth; level++)
+    {
+      if (descending)
+	{
+	  MBDesktopItem *child = find_child_named (folder, folder_names[level],
+						   True);
+	  if (child != NULL)
+	    {
+	      folder = child;
+	    }
+	  else
+	    {
+	      descending = False;
+	    }
+	}
+      free(folder_names[level]);
+    }
+
+  mb->current_folder_item = folder;
+  mb->current_head_item   = folder->item_child;
+  mb->current_page        = 0;
+
+  if (focus_name != NULL)
+    {
+      if (folder->item_child != NULL)
+	{
+	  focus = find_child_named (folder, focus_name, False);
+	}
+      free(focus_name);
+    }
+
+  if (focus == NULL && folder != mb->top_head_item
+      && folder->item_child != NULL
+      && folder->item_child->item_next_sibling != NULL)
+    {
+      focus = folder->item_child->item_next_sibling;
+    }
+  else if (focus == NULL)
+    {
+      focus = folder->item_child;
+    }
+
+  mb->kbd_focus_item     = focus;
+  mb->scroll_offset_item = mb->current_head_item;
 }
 
 #ifdef USE_DNOTIFY
@@ -1739,6 +1868,15 @@ mbdesktop_main(MBDesktop *mb)
     {
 	  if (WantReload) 	/* Triggered by dnotify signals etc */
 	    {
+	      char *folder_names[FOLDER_RESTORE_DEPTH_MAXIMUM];
+	      char *focus_name   = NULL;
+	      int   folder_depth = remember_open_folder(mb, folder_names);
+
+	      if (mb->kbd_focus_item != NULL && mb->kbd_focus_item->name != NULL)
+		{
+		  focus_name = strdup(mb->kbd_focus_item->name);
+		}
+
 	      mbdesktop_item_folder_contents_free(mb, mb->top_head_item);
 
 	      mb->current_folder_item = mb->top_head_item;
@@ -1747,8 +1885,7 @@ mbdesktop_main(MBDesktop *mb)
 
 	      modules_init(mb);
 
-	      mb->kbd_focus_item = mb->current_head_item 
-		= mb->scroll_offset_item = mb->top_head_item->item_child;
+	      restore_open_folder(mb, folder_names, folder_depth, focus_name);
 
 	      mbdesktop_view_paint(mb, False);
 
@@ -2043,6 +2180,13 @@ modules_init (MBDesktop *mb)
     {
       fprintf(stderr, "matchbox-desktop: failed to load any item modules.\n");
     }
+
+  for (i = 0; i < n_mods; i++)
+    {
+      free(mods[i]);
+    }
+
+  free(mods);
 }
 
 int 

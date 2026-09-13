@@ -17,7 +17,7 @@ old_library=''
 inherited_linker_flags=''
 
 # Libraries that this one depends upon.
-dependency_libs=' -L/home/vodkannelle/Code/piko/userspace/stage-target/usr/lib -lmb -lXext -lpng16 -lXft -lX11'
+dependency_libs=' -L/mnt/data/Code/piko/build/target/usr/lib -lmb -lXext -lpng16 -lXft -lX11'
 
 # Names of additional weak libraries provided by this library
 weak_library_names=''

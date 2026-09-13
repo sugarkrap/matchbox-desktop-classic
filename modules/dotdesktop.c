@@ -30,39 +30,92 @@ static SnDisplay *SnDpy;
 #endif
 
 static void
-insert_sorted_at_top_level (MBDesktop *mb, MBDesktopItem *item_new)
+insert_sorted_in_folder (MBDesktop     *mb,
+			 MBDesktopItem *folder,
+			 MBDesktopItem *item_new)
 {
-  MBDesktopItem *top = mbdesktop_get_top_level_folder(mb);
   MBDesktopItem *item;
+  MBDesktopItem *item_before = NULL;
 
-  if (top->item_child == NULL)
+  item_new->item_parent = folder;
+
+  if (folder->item_child == NULL)
     {
-      mbdesktop_items_append_to_top_level(mb, item_new);
-      return;
+      folder->item_child = item_new;
+    }
+  else
+    {
+      for (item = folder->item_child;
+	   item != NULL
+	     && (item->type == ITEM_TYPE_PREVIOUS
+		 || strcasecmp(item->name, item_new->name) <= 0);
+	   item = item->item_next_sibling)
+	{
+	  item_before = item;
+	}
+
+      if (item_before == NULL)
+	{
+	  item_new->item_next_sibling           = folder->item_child;
+	  folder->item_child->item_prev_sibling = item_new;
+	  folder->item_child                    = item_new;
+	}
+      else
+	{
+	  mbdesktop_items_insert_after (mb, item_before, item_new);
+	}
+    }
+}
+
+static MBDesktopItem *
+find_or_create_folder (MBDesktop     *mb,
+		       MBDesktopItem *parent,
+		       char          *name)
+{
+  MBDesktopItem *item;
+  MBDesktopItem *folder = NULL;
+
+  for (item = parent->item_child;
+       item != NULL && folder == NULL;
+       item = item->item_next_sibling)
+    {
+      if (item->type == ITEM_TYPE_FOLDER && !strcmp(item->name, name))
+	{
+	  folder = item;
+	}
     }
 
-  for (item = top->item_child; item != NULL; item = item->item_next_sibling)
-    if (strcasecmp(item->name, item_new->name) > 0)
-      break;
-
-  if (item == NULL)
+  if (folder == NULL)
     {
-      mbdesktop_items_append_to_top_level(mb, item_new);
-      return;
+      folder = mbdesktop_module_folder_create (mb, name, "mbfolder.png");
+      insert_sorted_in_folder (mb, parent, folder);
     }
 
-  item_new->item_parent = top;
+  return folder;
+}
 
-  if (item->item_prev_sibling == NULL)
+static void
+insert_sorted_by_platform (MBDesktop     *mb,
+			   MBDotDesktop  *dd,
+			   MBDesktopItem *item_new)
+{
+  MBDesktopItem *top      = mbdesktop_get_top_level_folder(mb);
+  char          *platform = (char *)mb_dotdesktop_get(dd, "X-Piko-Platform");
+
+  if (platform != NULL && platform[0] != '\0')
     {
+      MBDesktopItem *emulation_folder
+	= find_or_create_folder (mb, top, "Emulation");
 
-      item_new->item_next_sibling = item;
-      item->item_prev_sibling     = item_new;
-      top->item_child             = item_new;
-      return;
+      insert_sorted_in_folder (mb,
+			       find_or_create_folder (mb, emulation_folder,
+						      platform),
+			       item_new);
     }
-
-  mbdesktop_items_insert_after (mb, item->item_prev_sibling, item_new);
+  else
+    {
+      insert_sorted_in_folder (mb, top, item_new);
+    }
 }
 
 static void
@@ -89,11 +142,10 @@ add_a_dotdesktop_item (MBDesktop     *mb,
   heavy = mb_dotdesktop_get(dd, "X-Piko-Heavy");
   {
     char *video_key = (char *)mb_dotdesktop_get(dd, "X-Piko-Video");
-    char *parts_key = (char *)mb_dotdesktop_get(dd, "X-Piko-Parts");
     int   is_heavy  = heavy && (!strcasecmp((char *)heavy, "true")
 				|| !strcmp((char *)heavy, "1"));
 
-    if (is_heavy || video_key || parts_key)
+    if (is_heavy || video_key)
     {
       char *nm      = (char *)mb_dotdesktop_get(dd, "Name");
       char *reason  = (char *)mb_dotdesktop_get(dd, "X-Piko-Heavy-Reason");
@@ -102,7 +154,6 @@ add_a_dotdesktop_item (MBDesktop     *mb,
       char  reason_opt[512]  = "";
       char  drivers_opt[128] = "";
       char  video_opt[64]    = "";
-      char  parts_opt[256]   = "";
       char *wrapped;
       int   len;
 
@@ -114,18 +165,16 @@ add_a_dotdesktop_item (MBDesktop     *mb,
 	snprintf(drivers_opt, sizeof(drivers_opt), "--drivers='%s' ", drivers);
       if (video)
 	snprintf(video_opt, sizeof(video_opt), "--video='%s' ", video);
-      if (parts_key)
-	snprintf(parts_opt, sizeof(parts_opt), "--parts='%s' ", parts_key);
 
       len = strlen(exec_str) + strlen(nm) + strlen(reason_opt)
-            + strlen(drivers_opt) + strlen(video_opt) + strlen(parts_opt) + 64;
+            + strlen(drivers_opt) + strlen(video_opt) + 64;
 
       wrapped = malloc(len);
       if (wrapped)
 	{
-	  snprintf(wrapped, len, "matchbox-apprun -n '%s' %s%s%s%s%s-- %s",
+	  snprintf(wrapped, len, "matchbox-apprun -n '%s' %s%s%s%s-- %s",
 		   nm, is_heavy ? "" : "-y ", reason_opt, drivers_opt,
-		   video_opt, parts_opt, exec_str);
+		   video_opt, exec_str);
 	  free(exec_str);
 	  exec_str = wrapped;
 	}
@@ -157,7 +206,7 @@ add_a_dotdesktop_item (MBDesktop     *mb,
     mbdesktop_item_set_activate_callback (mb, item_new,
 					  item_activate_cb);
 
-  insert_sorted_at_top_level (mb, item_new);
+  insert_sorted_by_platform (mb, dd, item_new);
 }
 
 int

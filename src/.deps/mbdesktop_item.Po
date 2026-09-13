@@ -65,28 +65,28 @@ mbdesktop_item.o: mbdesktop_item.c mbdesktop_item.h mbdesktop.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/ctype.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xlib.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/X.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xfuncproto.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xosdefs.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xutil.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysym.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysymdef.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xatom.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xmd.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zlib.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zconf.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xlib.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/X.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xfuncproto.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xosdefs.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xutil.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/keysym.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/keysymdef.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xatom.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xmd.h \
+ /mnt/data/Code/piko/build/target/usr/include/zlib.h \
+ /mnt/data/Code/piko/build/target/usr/include/zconf.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/limits.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/syslimits.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/limits.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix2_lim.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/xopen_lim.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mb.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbconfig.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbpixbuf.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/png.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pnglibconf.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pngconf.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mb.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbconfig.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbpixbuf.h \
+ /mnt/data/Code/piko/build/target/usr/include/png.h \
+ /mnt/data/Code/piko/build/target/usr/include/pnglibconf.h \
+ /mnt/data/Code/piko/build/target/usr/include/pngconf.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/setjmp.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/setjmp.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/jmp_buf_tag.h \
@@ -94,13 +94,13 @@ mbdesktop_item.o: mbdesktop_item.c mbdesktop_item.h mbdesktop.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/ipc.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/shm.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/shm.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/XShm.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shm.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbexp.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbdotdesktop.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/extensions/XShm.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/extensions/shm.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbexp.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbdotdesktop.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/locale.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_locale.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbutil.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbutil.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/errno.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h \
@@ -108,37 +108,37 @@ mbdesktop_item.o: mbdesktop_item.c mbdesktop_item.h mbdesktop.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/wait.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/Xft.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/ft2build.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftheader.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/freetype.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftconfig.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftoption.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftstdlib.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/integer-types.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/public-macros.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/mac-support.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fttypes.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftsystem.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftimage.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrors.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftmoderr.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrdef.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/fontconfig/fontconfig.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/Xrender.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/render.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xdefs.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/XftCompat.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xft/Xft.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/ft2build.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftheader.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/freetype.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftconfig.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftoption.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftstdlib.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/integer-types.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/public-macros.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/mac-support.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/fttypes.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/ftsystem.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/ftimage.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/fterrors.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/ftmoderr.h \
+ /mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/fterrdef.h \
+ /mnt/data/Code/piko/build/target/usr/include/fontconfig/fontconfig.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/extensions/Xrender.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/extensions/render.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xdefs.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xft/XftCompat.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/langinfo.h \
  /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/nl_types.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbtray.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbmenu.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xresource.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shape.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shapeconst.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-common.h \
- /home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbtray.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/mbmenu.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/Xresource.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/extensions/shape.h \
+ /mnt/data/Code/piko/build/target/usr/include/X11/extensions/shapeconst.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/xsettings-client.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/xsettings-common.h \
+ /mnt/data/Code/piko/build/target/usr/include/libmb/xsettings-client.h \
  mbdesktop_module.h md5.h
 mbdesktop_item.h:
 mbdesktop.h:
@@ -208,28 +208,28 @@ mbdesktop.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/ctype.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xlib.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/X.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xfuncproto.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xosdefs.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xutil.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysym.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/keysymdef.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xatom.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xmd.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zlib.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/zconf.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xlib.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/X.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xfuncproto.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xosdefs.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xutil.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/keysym.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/keysymdef.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xatom.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xmd.h:
+/mnt/data/Code/piko/build/target/usr/include/zlib.h:
+/mnt/data/Code/piko/build/target/usr/include/zconf.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/limits.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/lib/gcc/arm-unknown-linux-uclibcgnueabi/13.4.0/include/syslimits.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/limits.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/posix2_lim.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/xopen_lim.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mb.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbconfig.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbpixbuf.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/png.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pnglibconf.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/pngconf.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mb.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbconfig.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbpixbuf.h:
+/mnt/data/Code/piko/build/target/usr/include/png.h:
+/mnt/data/Code/piko/build/target/usr/include/pnglibconf.h:
+/mnt/data/Code/piko/build/target/usr/include/pngconf.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/setjmp.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/setjmp.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/jmp_buf_tag.h:
@@ -237,13 +237,13 @@ mbdesktop.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/ipc.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/shm.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/shm.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/XShm.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shm.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbexp.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbdotdesktop.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/extensions/XShm.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/extensions/shm.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbexp.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbdotdesktop.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/locale.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_locale.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbutil.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbutil.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/errno.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h:
@@ -251,36 +251,36 @@ mbdesktop.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/sys/wait.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/Xft.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/ft2build.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftheader.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/freetype.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftconfig.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftoption.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/ftstdlib.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/integer-types.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/public-macros.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/config/mac-support.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fttypes.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftsystem.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftimage.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrors.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/ftmoderr.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/freetype2/freetype/fterrdef.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/fontconfig/fontconfig.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/Xrender.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/render.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xdefs.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xft/XftCompat.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xft/Xft.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/ft2build.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftheader.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/freetype.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftconfig.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftoption.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/ftstdlib.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/integer-types.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/public-macros.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/config/mac-support.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/fttypes.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/ftsystem.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/ftimage.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/fterrors.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/ftmoderr.h:
+/mnt/data/Code/piko/build/target/usr/include/freetype2/freetype/fterrdef.h:
+/mnt/data/Code/piko/build/target/usr/include/fontconfig/fontconfig.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/extensions/Xrender.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/extensions/render.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xdefs.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xft/XftCompat.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/langinfo.h:
 /mnt/data/Code/piko/toolchain/x-tools/arm-unknown-linux-uclibcgnueabi/arm-unknown-linux-uclibcgnueabi/sysroot/usr/include/nl_types.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbtray.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/mbmenu.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/Xresource.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shape.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/X11/extensions/shapeconst.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-common.h:
-/home/vodkannelle/Code/piko/userspace/stage-target/usr/include/libmb/xsettings-client.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbtray.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/mbmenu.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/Xresource.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/extensions/shape.h:
+/mnt/data/Code/piko/build/target/usr/include/X11/extensions/shapeconst.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/xsettings-client.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/xsettings-common.h:
+/mnt/data/Code/piko/build/target/usr/include/libmb/xsettings-client.h:
 mbdesktop_module.h:
 md5.h:

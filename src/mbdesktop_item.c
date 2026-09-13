@@ -40,7 +40,10 @@ void
 mbdesktop_item_free(MBDesktop     *mb, 
 		    MBDesktopItem *item)
 {
-  /* XXX callback to free item->data */
+  if (item->type == ITEM_TYPE_DOTDESKTOP_ITEM && item->data)
+    {
+      free(item->data);
+    }
 
   if (item->name)      free(item->name);
   if (item->name_extended)      free(item->name_extended);
@@ -112,9 +115,11 @@ mbdesktop_item_folder_contents_free(MBDesktop     *mb,
 	{
 	  item_tmp = item_cur->item_next_sibling;
 
-	  /* XXX free up any children - check this !! XX */
 	  if (item_cur->item_child)
-	    mbdesktop_item_folder_contents_free(mb, item_cur->item_child);
+	    {
+	      mbdesktop_item_folder_contents_free(mb, item_cur);
+	      mbdesktop_item_free(mb, item_cur->item_child);
+	    }
 
 	  /* Stop possible segv of focus_item pointing to non-existant */
 	  if (mb->kbd_focus_item == item_cur)
